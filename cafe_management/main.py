@@ -1,5 +1,13 @@
+import sys
+import os
+
+# Thêm thư mục src vào sys.path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
+from pages import loadingPage
+
 def main():
-    print("Welcome to the Cafe Management System!")
+    loadingPage.render()
 
 if __name__ == "__main__":
     main()
