@@ -1,1 +1,1 @@
-from .loading import loadingPage
+from .loadingPage import loadingPage

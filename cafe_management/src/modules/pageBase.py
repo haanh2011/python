@@ -1,6 +1,6 @@
 from tkinter import *
 
-class WidgetBase:
+class PageBase:
     attributes = {
         # 'title': "Widget's title",
         'height': None,
@@ -10,16 +10,12 @@ class WidgetBase:
     }
     configs = {}
     renderFunc = None
-    def __init__(self, **kw):
-        if 'root' in kw:
-            self.root = kw['root']
-        if 'renderFunc' in kw:
-            self.renderFunc = kw['renderFunc']
-        if 'configs' in kw:
-            self.configs.update(kw['configs'])
-        if 'attributes' in kw:
-            # Ghi đè các thuộc tính mặc định của attribute vào
-            self.attributes.update(kw['attributes'])
+    def __init__(self, root, renderFunc, attributes = {}, configs= {}):
+        self.root = root
+        self.renderFunc = renderFunc
+        self.configs.update(configs)
+        # Ghi đè các thuộc tính mặc định của attribute vào
+        self.attributes.update(attributes)
 
         self._setAttributes()
         self._setConfigs()

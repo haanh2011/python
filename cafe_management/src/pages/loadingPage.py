@@ -1,8 +1,10 @@
-from modules import WidgetBase
+# src/pages/loadingPage.py
+import sys
+
+from utilities import run_with_custom_path
+from modules import PageBase
 from tkinter import *
 from tkinter.ttk import Progressbar
-
-import sys
 
 PAGE_CONFIGS = {
     'background': '#fd6a36'
@@ -47,14 +49,20 @@ def loadingPageRender ():
             progress['value'] = 10*i
             i += 1
         else:
-            print('Load xong!!!')
+            root.withdraw()
+            # Chạy loadingPage.py với PYTHONPATH chỉ định cho Windows
+            run_with_custom_path("src/pages/loginPage.py")
+            root.destroy()
+            # print('Load Completed!!!')
     
     load()
     load()
 
-loadingPage = WidgetBase(**{
-    'root': root,
-    'attributes': PAGE_ATTRIBUTES,
-    'configs': PAGE_CONFIGS,
-    'renderFunc': loadingPageRender,
-})
+loadingPage = PageBase(root, loadingPageRender,PAGE_ATTRIBUTES, PAGE_CONFIGS)
+
+
+def main():
+    loadingPage.render();
+
+if __name__ == "__main__":
+    main()

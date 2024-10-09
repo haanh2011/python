@@ -1,13 +1,8 @@
-import sys
-import os
-
-# Thêm thư mục src vào sys.path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-
-from pages import loadingPage
+from src.utilities import run_with_custom_path
 
 def main():
-    loadingPage.render()
+    # Chạy loadingPage.py với PYTHONPATH chỉ định cho Windows
+    run_with_custom_path("src/pages/loadingPage.py")
 
 if __name__ == "__main__":
     main()

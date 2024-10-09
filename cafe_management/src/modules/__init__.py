@@ -1,1 +1,1 @@
-from .widgetBase import WidgetBase
+from .pageBase import PageBase
