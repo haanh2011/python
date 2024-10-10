@@ -8,6 +8,3 @@ class User():
         self.users_df = self.sheet_dict['Users']
         # Kiểm tra nội dung
         print(self.users_df.head())
-
-    def validate_user(self, username, password):
-        return any((self.users_df['Username'] == username) & (self.users_df['Password'] == password))
