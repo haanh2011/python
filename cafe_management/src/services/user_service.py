@@ -3,4 +3,5 @@ class UserService:
         self.user_model = user_model
 
     def authenticate(self, username, password):
-        return self.user_model.validate_user(username, password)
+        return any((self.user_model.users_df['Username'] == username) &
+                   (self.user_model.users_df['Password'] == password))
