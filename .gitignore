@@ -4,4 +4,6 @@
 
 /.vs
 /cafe_management/venv
+/cafe_management/.idea
 /.idea
+/README.md
