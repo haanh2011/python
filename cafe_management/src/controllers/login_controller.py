@@ -1,4 +1,5 @@
-from src.main_application import MainApplication
+from cafe_management.src.main_application import MainApplication
+
 
 class LoginController:
     def __init__(self, user_service, view):
