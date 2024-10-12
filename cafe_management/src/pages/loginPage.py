@@ -5,9 +5,10 @@ import sqlite3  # Thêm thư viện sqlite3
 
 from tkinter import *
 from tkinter import messagebox
+from customtkinter import *
 from PIL import ImageTk, Image
 from modules import PageBase
-
+from themes import *
 
 PAGE_CONFIGS = {
     'background': '#ffffff'
@@ -18,7 +19,7 @@ PAGE_ATTRIBUTES = {
     'height': 650
 }
 
-root = Tk()
+root = CTk()
 
 def renderLoginPage():
     # ====== LOGO ==========
