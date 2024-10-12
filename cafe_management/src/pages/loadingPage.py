@@ -28,18 +28,18 @@ def loadingPageRender ():
     root.overrideredirect(1)
     root.wm_attributes('-topmost', True)
 
-    welcome_label = PrimaryLabel(root, text='Welcome to Coffee Manager System')
+    welcome_label = H3Label(root, text='Welcome to Coffee Manager System')
     welcome_label.place(x=75, y=35)
 
     bg_label = CTkLabel(root, image=image, fg_color='#fd6a36', text=None)
-    bg_label.place(x=145, y=100)
+    bg_label.place(x=170, y=110)
 
     progress_label = CTkLabel(root, text="Please Wait...")
-    progress_label.place(x=195, y=360)
+    progress_label.place(x=195, y=350)
     progress = CTkProgressBar(root, orientation=HORIZONTAL, width=500, mode='determinate')
-    progress.place(x=15, y=390)
+    progress.place(x=15, y=380)
 
-    exit_btn = CTkButton(root, text='X', command=lambda: handleExit(), border_width=0, font=("yu gothic ui", 16, "bold"), width= 50)
+    exit_btn = PrimaryButton(root, text='X', command=lambda: handleExit(), border_width=0, font=("yu gothic ui", 16, "bold"), width= 50)
     exit_btn.place(x=480, y=0)
 
     def load():
