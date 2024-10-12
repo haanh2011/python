@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 "# python" 
+=======
+>>>>>>> hmew
 # Personal Finance Manager
 
 ## Macos
