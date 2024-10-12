@@ -1,12 +1,17 @@
-import pandas as pd
-
 class Product:
-    def __init__(self, excel_file):
-        # Đọc tất cả các sheet trong tệp Excel vào một dictionary
-        self.sheet_dict = pd.read_excel(excel_file, sheet_name=None)
-        # Truy cập từng sheet bằng tên của nó
-        self.product_df = self.sheet_dict['Products']
-        # Kiểm tra nội dung
-        print(self.product_df.head())
+    def __init__(self, id_pro, name, price, description, category):
+        self.id_pro = id_pro
+        self.name = name
+        self.price = price
+        self.description = description
+        self.category = category # Đây là đối tượng của Category
+
+    def get_product_info(self):
+        print(f"Mã sản phẩm: {self.id}")
+        print(f"Tên sản phẩm: {self.name}")
+        print(f"Giá: {self.price}")
+        print(f"Mô tả: {self.description}")
+        print(f"Loại: {self.category.name}")  # Lấy tên từ Category
+
 
 
