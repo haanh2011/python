@@ -3,5 +3,6 @@
 # from .format_helper import FormatHelper
 # from .id_generator import *
 from .path import run_with_custom_path
+from .theme import setTheme
 
 __version__ = "1.0.0"

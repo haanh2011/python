@@ -1,19 +1,22 @@
 # src/pages/loadingPage.py
 import sys
 
-from utilities import run_with_custom_path
+from utilities import run_with_custom_path, setTheme
 from modules import PageBase
-from tkinter import *
-from tkinter.ttk import Progressbar
+from tkinter import PhotoImage
+from customtkinter import *
+from themes import *
 
 PAGE_CONFIGS = {
-    'background': '#fd6a36'
+    # 'background': '#fd6a36'
 }
 PAGE_ATTRIBUTES = {
     'width':530,'height':430
 }
 
-root = Tk()
+setTheme()
+
+root = CTk()
 image = PhotoImage(file='src/assets/images/coffeeShop-ico.png')
 
 def handleExit():
@@ -25,28 +28,27 @@ def loadingPageRender ():
     root.overrideredirect(1)
     root.wm_attributes('-topmost', True)
 
-    welcome_label = Label(text='Welcome to Coffee Manager System', bg='#fd6a36', font=("yu gothic ui", 15, "bold"), fg='black')
-    welcome_label.place(x=85, y=25)
+    welcome_label = PrimaryLabel(root, text='Welcome to Coffee Manager System')
+    welcome_label.place(x=75, y=35)
 
-    bg_label = Label(root, image=image, bg='#fd6a36')
-    bg_label.place(x=130, y=65)
+    bg_label = CTkLabel(root, image=image, fg_color='#fd6a36', text=None)
+    bg_label.place(x=145, y=100)
 
-    progress_label = Label(root, text="Please Wait...", font=('yu gothic ui', 13, 'bold'), fg='black', bg='#fd6a36')
-    progress_label.place(x=190, y=350)
-    progress = Progressbar(root, orient=HORIZONTAL, length=500, mode='determinate')
+    progress_label = CTkLabel(root, text="Please Wait...")
+    progress_label.place(x=195, y=360)
+    progress = CTkProgressBar(root, orientation=HORIZONTAL, width=500, mode='determinate')
     progress.place(x=15, y=390)
 
-    exit_btn = Button(text='x', bg='#fd6a36', command=lambda: handleExit(), bd=0, font=("yu gothic ui", 16, "bold"),
-                    activebackground='#fd6a36', fg='white')
-    exit_btn.place(x=490, y=0)
+    exit_btn = CTkButton(root, text='X', command=lambda: handleExit(), border_width=0, font=("yu gothic ui", 16, "bold"), width= 50)
+    exit_btn.place(x=480, y=0)
 
     def load():
         global i
         if i <= 10:
             txt = 'Please Wait...  ' + (str(10*i)+'%')
-            progress_label.config(text=txt)
+            progress_label.configure(text=txt)
             progress_label.after(500, load) # 500 (ms) = Time to load 10%
-            progress['value'] = 10*i
+            progress.set(0.1*i)
             i += 1
         else:
             root.withdraw()
