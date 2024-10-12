@@ -8,3 +8,4 @@
 /.idea
 /README.md
 /.venv
+/cafe_management/src/views/__pycache__
