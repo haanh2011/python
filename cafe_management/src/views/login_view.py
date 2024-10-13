@@ -15,19 +15,14 @@ class LoginView(ctk.CTk):
         # Tính toán để căn giữa cửa sổ
         screen_width = self.winfo_screenwidth()  # Lấy chiều rộng màn hình
         screen_height = self.winfo_screenheight()  # Lấy chiều cao màn hình
-        x_cordinate = int((screen_width / 2) - (window_width / 2))  # Tính toán tọa độ x
-        y_cordinate = int((screen_height / 2) - (window_height / 2))  # Tính toán tọa độ y
+        x_cordinate = int((screen_width - window_width) / 2)  # Tính toán tọa độ x
+        y_cordinate = int((screen_height - window_height) / 2)  # Tính toán tọa độ y
 
         # Thiết lập vị trí và kích thước cửa sổ
         self.geometry(f"{window_width}x{window_height}+{x_cordinate}+{y_cordinate}")
 
-        # Tải hình ảnh nền và sử dụng CTkImage
-        # self.bg_image = ctk.CTkImage(Image.open("Images/bg.jpg"), size=(window_width, window_height))
-        # self.bg_label = ctk.CTkLabel(self, image=self.bg_image, text="")
-        # self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)  # Cho hình ảnh phủ toàn bộ cửa sổ
-
         # Tải hình ảnh logo và đặt phía trên tiêu đề
-        self.image = ctk.CTkImage(Image.open("Images/coffeeShop-ico.png"), size=(60, 60))
+        self.image = ctk.CTkImage(Image.open("images/coffeeShop-ico.png"), size=(60, 60))
         self.image_label = ctk.CTkLabel(master=self, image=self.image, text="")
         self.image_label.pack(pady=(10, 10))  # Căn logo với khoảng cách từ trên
 
