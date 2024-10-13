@@ -1,4 +1,9 @@
 import customtkinter as ctk
+
+from src.views.category_view import CategoryView
+from src.views.customer_view import CustomerView
+from src.views.invoice_view import InvoiceView
+from src.views.order_view import OrderView
 from src.views.product_view import ProductView
 from PIL import Image
 
@@ -7,7 +12,7 @@ class MainApplication(ctk.CTk):
         super().__init__()
         self.title("The Coffee Application")
         window_width = 800
-        window_height = 500
+        window_height = 600
 
         # Tính toán để căn giữa cửa sổ
         screen_width = self.winfo_screenwidth()  # Lấy chiều rộng màn hình
@@ -45,8 +50,10 @@ class MainApplication(ctk.CTk):
         self.label_main = ctk.CTkLabel(
             master=self.main_frame,
             text="Welcome to The Coffee Management",
-            font=("yu gothic ui", 24, "bold"),
-            fg_color = "#FCD9C4"
+            font=("yu gothic ui", 28, "bold"),
+            text_color="#945305",  # Sử dụng màu nổi bật hơn
+            padx=10,  # Thêm khoảng cách padding xung quanh chữ
+            pady=10  # Thêm khoảng cách padding xung quanh chữ
         )
         self.label_main.pack(pady=(20, 10))
 
@@ -73,6 +80,7 @@ class MainApplication(ctk.CTk):
             master=self.button_frame,
             text="Manage Category",
             image=self.img_category,
+            command=self.open_category_view,
             text_color="white",
             fg_color="#D0770B",
             hover_color="#945305",
@@ -102,6 +110,7 @@ class MainApplication(ctk.CTk):
             master=self.button_frame,
             text="Manage Customers",
             image=self.img_customer,
+            command=self.open_customer_view,
             text_color="white",
             fg_color="#D0770B",
             hover_color="#945305",
@@ -116,6 +125,7 @@ class MainApplication(ctk.CTk):
             master=self.button_frame,
             text="Manage Order",
             image=self.img_order,
+            command=self.open_order_view,
             text_color="white",
             fg_color="#D0770B",
             hover_color="#945305",
@@ -130,6 +140,7 @@ class MainApplication(ctk.CTk):
             master=self.button_frame,
             text="Manage Invoice",
             image=self.img_invoice,
+            command=self.open_invoice_view,
             text_color="white",
             fg_color="#D0770B",
             hover_color="#945305",
@@ -164,9 +175,29 @@ class MainApplication(ctk.CTk):
         new_height = event.height
         self.bg_image.configure(size=(new_width, new_height))
 
+    def open_category_view(self):
+        self.withdraw()
+        category_window = CategoryView(self)
+        category_window.grab_set()
+
     def open_product_view(self):
         self.withdraw()
         product_window = ProductView(self)
+        product_window.grab_set()
+
+    def open_customer_view(self):
+        self.withdraw()
+        product_window = CustomerView(self)
+        product_window.grab_set()
+
+    def open_order_view(self):
+        self.withdraw()
+        product_window = OrderView(self)
+        product_window.grab_set()
+
+    def open_invoice_view(self):
+        self.withdraw()
+        product_window = InvoiceView(self)
         product_window.grab_set()
 
     def logout(self):

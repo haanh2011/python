@@ -55,6 +55,9 @@ class LoginView(ctk.CTk):
         )
         self.button_login.place(x=(window_width - 200) // 2, y=350)  # Căn giữa nút đăng nhập
 
+        # Ràng buộc phím Enter để kích hoạt nút đăng nhập
+        self.bind('<Return>', lambda event: self.handle_login())
+
     def handle_login(self):
         if self.controller is not None:
             self.controller.handle_login()  # Gọi phương thức handle_login từ controller

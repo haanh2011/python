@@ -6,7 +6,7 @@ class ProductView(ctk.CTkToplevel):
         super().__init__(master)
         self.title("Product Management")
         window_width = 800  # Chiều rộng cửa sổ
-        window_height = 500  # Chiều cao cửa sổ
+        window_height = 600  # Chiều cao cửa sổ
 
         # Tính toán để căn giữa cửa sổ
         screen_width = self.winfo_screenwidth()  # Lấy chiều rộng màn hình
@@ -18,12 +18,20 @@ class ProductView(ctk.CTkToplevel):
         self.geometry(f"{window_width}x{window_height}+{x_cordinate}+{y_cordinate}")
 
         # Tạo tiêu đề cho ProductView
-        self.label_title = ctk.CTkLabel(master=self, text="Product Management", font=("yu gothic ui", 20, "bold"))
-        self.label_title.pack(pady=20)
+        self.label_title = ctk.CTkLabel(
+            master=self,
+            text="Product Management",
+            font=("yu gothic ui", 28, "bold"),  # Tăng kích thước chữ
+            text_color="#FF6F61",  # Sử dụng màu nổi bật hơn
+            fg_color="#FFFFFF",  # Màu nền trắng cho tiêu đề
+            padx=10,  # Thêm khoảng cách padding xung quanh chữ
+            pady=10  # Thêm khoảng cách padding xung quanh chữ
+        )
+        self.label_title.pack(pady=10, padx=10)  # Giữ khoảng cách với các thành phần khác
 
-        # Tạo khung cuộn cho bảng sản phẩm
-        self.scrollable_frame = ctk.CTkScrollableFrame(self)
-        self.scrollable_frame.pack(pady=10, fill='both', expand=True)
+        # Khung cuộn chứa bảng sản phẩm
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780, height=200)  # Giới hạn chiều cao khung
+        self.scrollable_frame.pack(pady=10, fill='both', expand=False)  # Không để khung expand
 
         self.table_headers = ["ID", "Name", "Price", "Desc"]
         self.products = []  # Danh sách lưu trữ thông tin sản phẩm
@@ -40,14 +48,18 @@ class ProductView(ctk.CTkToplevel):
         # Tải hình ảnh cho các nút sử dụng CTkImage
         self.img_back = ctk.CTkImage(light_image=Image.open("images/back.png"), size=(40, 40))
 
-        # Nút trở về Main Application
-        self.button_back = ctk.CTkButton(master=self,
-                                         text="",
-                                         fg_color="#FACE9C",
-                                         image=self.img_back,
-                                         command=self.back_to_main,
-                                         hover_color="#F09C42")
-
+        # Nút trở về Main Application với kích thước lớn hơn
+        self.button_back = ctk.CTkButton(
+            master=self,
+            text="",  # Không cần văn bản
+            fg_color="#FACE9C",  # Màu nền nút
+            image=self.img_back,  # Hình ảnh nút
+            command=self.back_to_main,
+            hover_color="#F09C42",
+            width=60,  # Đặt chiều rộng nút
+            height=60,  # Đặt chiều cao nút
+            corner_radius=10,  # Bo góc nút cho mềm mại
+        )
         self.button_back.place(relx=0.98, rely=0.07, anchor='e')  # Đặt ở góc phải trên cùng
 
         # Để xử lý khi đóng cửa sổ
@@ -69,8 +81,8 @@ class ProductView(ctk.CTkToplevel):
 
         # Thêm một số sản phẩm mẫu vào danh sách
         self.products = [
-            ["1", "Product A", "$10", "Description A"],
-            ["2", "Product B", "$20", "Description B"],
+            ["1", "Product A", "$10", "Description A Description A"],
+            ["2", "Product B", "$20", "Description B Description B"],
             ["3", "Product C", "$30", "Description C"],
             ["4", "Product D", "$40", "Description D"],
             ["5", "Product E", "$50", "Description E"],
@@ -79,18 +91,26 @@ class ProductView(ctk.CTkToplevel):
             ["8", "Product H", "$80", "Description H"],
         ]
 
+        # Thiết lập chiều rộng cố định cho các cột
+        column_widths = [50, 150, 50, 200]  # Danh sách kích thước cố định của từng cột
+
         for index, product in enumerate(self.products):
             for j, value in enumerate(product):
-                label = ctk.CTkLabel(self.scrollable_frame, text=value)
+                label = ctk.CTkLabel(
+                    self.scrollable_frame,
+                    text=value,
+                    width=column_widths[j],  # Đặt kích thước cố định cho mỗi cột
+                    wraplength=column_widths[j]  # Giới hạn chiều rộng hiển thị
+                )
                 label.grid(row=index + 1, column=j, padx=10, pady=5)
 
             # Nút sửa sản phẩm
-            edit_button = ctk.CTkButton(self.scrollable_frame, text="Edit", width=8,
+            edit_button = ctk.CTkButton(self.scrollable_frame, text="Edit", width=60,  # Kích thước cố định cho nút
                                         command=lambda idx=index: self.edit_product(idx))
             edit_button.grid(row=index + 1, column=len(product), padx=10, pady=5)
 
             # Nút xóa sản phẩm
-            delete_button = ctk.CTkButton(self.scrollable_frame, text="Delete", width=8,
+            delete_button = ctk.CTkButton(self.scrollable_frame, text="Delete", width=60,  # Kích thước cố định cho nút
                                           command=lambda idx=index: self.delete_product(idx))
             delete_button.grid(row=index + 1, column=len(product) + 1, padx=10, pady=5)
 
@@ -131,12 +151,24 @@ class ProductView(ctk.CTkToplevel):
         self.entry_desc = ctk.CTkEntry(info_column, placeholder_text="Product Desc", width=200)  # Tăng chiều rộng
         self.entry_desc.grid(row=3, column=1, padx=10, pady=5)
 
+        # Thêm Combobox để chọn danh mục sản phẩm
+        self.label_category = ctk.CTkLabel(info_column, text="Product Category:")
+        self.label_category.grid(row=4, column=0, padx=10, pady=5)
+
+        # Danh sách các category (danh mục sản phẩm)
+        self.category_options = ["Category A", "Category B", "Category C"]
+        self.combobox_category = ctk.CTkComboBox(info_column, values=self.category_options, width=200)
+        self.combobox_category.grid(row=4, column=1, padx=10, pady=5)
+
+        self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
+        self.button_add.grid(row=0, column=0, pady=10)
+
         # Nút thêm sản phẩm
         self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
         self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút sửa sản phẩm
-        self.button_edit = ctk.CTkButton(master=button_column, text="Edit Product", command=lambda: self.edit_product())
+        self.button_edit = ctk.CTkButton(master=button_column, text="Update Product", command=lambda: self.edit_product())
         self.button_edit.grid(row=1, column=0, pady=5)
 
     def add_product(self):
