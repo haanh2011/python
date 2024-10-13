@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import set_default_color_theme
 from pathlib import Path
 
 def setTheme(themeType = 'main'):

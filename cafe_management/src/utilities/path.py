@@ -1,6 +1,5 @@
 import os
 import platform
-import subprocess
 
 def run_with_custom_path(script_path, custom_path = 'src'):
     # Xác định hệ điều hành
