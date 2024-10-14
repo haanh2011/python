@@ -100,7 +100,8 @@ class ProductView(ctk.CTkToplevel):
                     self.scrollable_frame,
                     text=value,
                     width=column_widths[j],  # Đặt kích thước cố định cho mỗi cột
-                    wraplength=column_widths[j]  # Giới hạn chiều rộng hiển thị
+                    anchor="w",  # Căn văn bản về phía trái
+                    wraplength=0  # Tắt ngắt dòng, đặt giá trị lớn hơn nếu cần
                 )
                 label.grid(row=index + 1, column=j, padx=10, pady=5)
 
@@ -159,9 +160,6 @@ class ProductView(ctk.CTkToplevel):
         self.category_options = ["Category A", "Category B", "Category C"]
         self.combobox_category = ctk.CTkComboBox(info_column, values=self.category_options, width=200)
         self.combobox_category.grid(row=4, column=1, padx=10, pady=5)
-
-        # self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
-        # self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút thêm sản phẩm
         self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)

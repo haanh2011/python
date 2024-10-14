@@ -66,10 +66,15 @@ class CategoryView(ctk.CTkToplevel):
         self.protocol("WM_DELETE_WINDOW", self.back_to_main)
 
     def create_table(self):
-        # Tạo tiêu đề cho bảng
+        # Tạo tiêu đề cho bảng và căn lề trái
         for header in self.table_headers:
-            label = ctk.CTkLabel(self.scrollable_frame, text=header)
-            label.grid(row=0, column=self.table_headers.index(header), padx=10, pady=5)
+            label = ctk.CTkLabel(
+                self.scrollable_frame,
+                text=header,
+                anchor="center",  # Căn giữa tiêu đề
+                width=100  # Đặt kích thước cố định cho tiêu đề nếu cần
+            )
+            label.grid(row=0, column=self.table_headers.index(header), padx=10, pady=5, sticky="w")
 
         # Thêm cột cho các nút (Edit và Delete)
         self.scrollable_frame.grid_columnconfigure(len(self.table_headers) - 2, weight=1)  # Cột Edit
@@ -100,7 +105,8 @@ class CategoryView(ctk.CTkToplevel):
                     self.scrollable_frame,
                     text=value,
                     width=column_widths[j],  # Đặt kích thước cố định cho mỗi cột
-                    wraplength=column_widths[j]  # Giới hạn chiều rộng hiển thị
+                    anchor="w",  # Căn văn bản về phía trái
+                    wraplength=0  # Tắt ngắt dòng, đặt giá trị lớn hơn nếu cần
                 )
                 label.grid(row=index + 1, column=j, padx=10, pady=5)
 
@@ -134,7 +140,7 @@ class CategoryView(ctk.CTkToplevel):
         self.label_name = ctk.CTkLabel(info_column, text="Category Name:")
         self.label_name.grid(row=1, column=0, padx=10, pady=5)
 
-        self.entry_name = ctk.CTkEntry(info_column, placeholder_text="Product Name", width=200)
+        self.entry_name = ctk.CTkEntry(info_column, placeholder_text="Category Name", width=200)
         self.entry_name.grid(row=1, column=1, padx=10, pady=5)
 
         # Nút thêm loại sản phẩm
