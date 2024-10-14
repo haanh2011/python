@@ -1,1 +1,1 @@
-from .window import WindowBase
+from .window import WindowBase,WindowMain

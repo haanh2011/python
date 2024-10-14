@@ -8,8 +8,8 @@ from customtkinter import *
 from PIL import ImageTk, Image
 
 from templates import WindowBase
-from themes import CusEntry
-from utilities import setTheme
+from themes import CusEntry, PrimaryButton
+from utilities import setTheme,run_with_custom_path
 
 setTheme()
 
@@ -58,14 +58,16 @@ class LoginPage(WindowBase):
         # ========================================================================
         # ============================LOGIN BTN====================================
         # ========================================================================
-        loginButton = CTkButton(self.window, text='Login', font=("", 12, "bold"),
+        loginButton = PrimaryButton(self.window, text='Login', font=("", 12, "bold"),
                             cursor='hand2', command=self.handleLogin, width=290, height=40)
         loginButton.place(x=120, y=370)
     def handleLogin(self):
         # ========================================================================
         # ============================HANDLE WHEN CLICK LOGIN BTN=================
         # ========================================================================
-        print('Handle Login')
+        self.window.withdraw()
+        run_with_custom_path("src/views/orderPage.py")
+        self.window.destroy()
         # # Admin
         # conn1 = sqlite3.connect("./Database/CoffeeShop.db")
         # cursor1 = conn1.cursor()
