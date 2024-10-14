@@ -127,14 +127,14 @@ class ProductView(ctk.CTkToplevel):
         self.label_id = ctk.CTkLabel(info_column, text="Product ID:")
         self.label_id.grid(row=0, column=0, padx=10, pady=5)
 
-        self.entry_id = ctk.CTkEntry(info_column, state="readonly", width=200)  # Chỉ đọc và tăng chiều rộng
+        self.entry_id = ctk.CTkEntry(info_column, state="readonly", width=200)  # Chỉ đọc
         self.entry_id.grid(row=0, column=1, padx=10, pady=5)
 
         # Trường tên sản phẩm
         self.label_name = ctk.CTkLabel(info_column, text="Product Name:")
         self.label_name.grid(row=1, column=0, padx=10, pady=5)
 
-        self.entry_name = ctk.CTkEntry(info_column, placeholder_text="Product Name", width=200)  # Tăng chiều rộng
+        self.entry_name = ctk.CTkEntry(info_column, placeholder_text="Product Name", width=200)
         self.entry_name.grid(row=1, column=1, padx=10, pady=5)
 
         # Trường giá sản phẩm
@@ -160,15 +160,15 @@ class ProductView(ctk.CTkToplevel):
         self.combobox_category = ctk.CTkComboBox(info_column, values=self.category_options, width=200)
         self.combobox_category.grid(row=4, column=1, padx=10, pady=5)
 
-        self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
-        self.button_add.grid(row=0, column=0, pady=10)
+        # self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
+        # self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút thêm sản phẩm
         self.button_add = ctk.CTkButton(master=button_column, text="Add Product", command=self.add_product)
         self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút sửa sản phẩm
-        self.button_edit = ctk.CTkButton(master=button_column, text="Update Product", command=lambda: self.edit_product())
+        self.button_edit = ctk.CTkButton(master=button_column, text="Update Product", command=lambda: self.edit_product)
         self.button_edit.grid(row=1, column=0, pady=5)
 
     def add_product(self):
