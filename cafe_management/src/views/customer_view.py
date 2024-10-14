@@ -116,6 +116,13 @@ class CustomerView(ctk.CTkToplevel):
             delete_button.grid(row=index + 1, column=len(customer) + 1, padx=10, pady=5)
 
     def create_form(self):
+        # Hàm kiểm tra đầu vào (chỉ cho phép số)
+        def only_numbers(char):
+            return char.isdigit() or char == ""  # Cho phép số hoặc chuỗi rỗng (khi xóa)
+
+        # Tạo validatecommand cho Phone và Point
+        vcmd = (self.register(only_numbers), '%P')  # '%P' là giá trị nhập vào
+
         # Cột cho thông tin
         info_column = ctk.CTkFrame(self.form_frame)
         info_column.grid(row=0, column=0, padx=10, pady=10)
@@ -145,18 +152,20 @@ class CustomerView(ctk.CTkToplevel):
         self.entry_address = ctk.CTkEntry(info_column, placeholder_text="Address", width=200)  # Tăng chiều rộng
         self.entry_address.grid(row=2, column=1, padx=10, pady=5)
 
-        # Trường Phone
+        # Trường Phone (chỉ cho phép nhập số)
         self.label_phone = ctk.CTkLabel(info_column, text="Phone:")
         self.label_phone.grid(row=3, column=0, padx=10, pady=5)
 
-        self.entry_phone = ctk.CTkEntry(info_column, placeholder_text="Phone", width=200)  # Tăng chiều rộng
+        self.entry_phone = ctk.CTkEntry(info_column, placeholder_text="Phone", width=200, validate="key",
+                                        validatecommand=vcmd)
         self.entry_phone.grid(row=3, column=1, padx=10, pady=5)
 
-        # Trường Point
+        # Trường Point (chỉ cho phép nhập số)
         self.label_point = ctk.CTkLabel(info_column, text="Point:")
         self.label_point.grid(row=4, column=0, padx=10, pady=5)
 
-        self.entry_point = ctk.CTkEntry(info_column, placeholder_text="Point", width=200)  # Tăng chiều rộng
+        self.entry_point = ctk.CTkEntry(info_column, placeholder_text="Point", width=200, validate="key",
+                                        validatecommand=vcmd)
         self.entry_point.grid(row=4, column=1, padx=10, pady=5)
 
         # Nút thêm Customer
