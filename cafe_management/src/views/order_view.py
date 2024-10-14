@@ -168,11 +168,11 @@ class OrderView(ctk.CTkToplevel):
         self.button_edit.grid(row=1, column=0, pady=5)
 
     def add_order(self):
-        # Logic cho việc thêm loại sản phẩm
+        # Logic cho việc thêm order
         print("Thêm order mới!")
 
     def edit_order(self, index=None):
-        # Logic cho việc sửa loại sản phẩm
+        # Logic cho việc sửa order
         if index is not None:
             print(f"Sửa order tại chỉ số {index}!")
         else:
