@@ -30,7 +30,7 @@ class CategoryView(ctk.CTkToplevel):
         self.label_title.pack(pady=10, padx=10)  # Giữ khoảng cách với các thành phần khác
 
         # Khung cuộn chứa bảng sản phẩm
-        self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780, height=200)  # Giới hạn chiều cao khung
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780, height=300)  # Giới hạn chiều cao khung
         self.scrollable_frame.pack(pady=10, fill='both', expand=False)  # Không để khung expand
 
         self.table_headers = ["ID", "Name"]
