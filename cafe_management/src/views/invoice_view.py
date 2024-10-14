@@ -33,7 +33,7 @@ class InvoiceView(ctk.CTkToplevel):
         self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780, height=250)  # Giới hạn chiều cao khung
         self.scrollable_frame.pack(pady=10, fill='both', expand=False)  # Không để khung expand
 
-        self.table_headers = ["ID", "ID Order", "Date", "Desc"]
+        self.table_headers = ["ID", "ID Order", "Date", "Desc", "Actions"]
         self.invoices = []  # Danh sách lưu trữ thông tin invoice
 
         self.create_table()
@@ -92,7 +92,11 @@ class InvoiceView(ctk.CTkToplevel):
         ]
 
         # Thiết lập chiều rộng cố định cho các cột
-        column_widths = [25, 25, 25, 150]  # Danh sách kích thước cố định của từng cột
+        column_widths = [25, 25, 25, 150, 120]  # Danh sách kích thước cố định của từng cột
+
+        # Tải icon cho các nút
+        edit_icon = ctk.CTkImage(light_image=Image.open("images/edit.png"), size=(20, 20))  # Icon chỉnh sửa
+        delete_icon = ctk.CTkImage(light_image=Image.open("images/remove.png"), size=(20, 20))  # Icon xóa
 
         for index, invoice in enumerate(self.invoices):
             for j, value in enumerate(invoice):
@@ -106,13 +110,35 @@ class InvoiceView(ctk.CTkToplevel):
                 label.grid(row=index + 1, column=j, padx=10, pady=5)
 
             # Nút sửa invoice
-            edit_button = ctk.CTkButton(self.scrollable_frame, text="Edit", width=60,  # Kích thước cố định cho nút
-                                        command=lambda idx=index: self.edit_invoice(idx))
+            edit_button = ctk.CTkButton(
+                self.scrollable_frame,
+                text="",
+                image=edit_icon,  # Thêm icon chỉnh sửa
+                width=60,  # Kích thước rộng hơn để nhìn cân đối
+                height=40,  # Chiều cao lớn hơn
+                fg_color="#5A9BD5",  # Màu nền xanh dịu mắt
+                hover_color="#41729F",  # Màu khi hover (sáng hơn một chút)
+                text_color="white",  # Màu chữ trắng
+                corner_radius=10,  # Bo tròn góc nút
+                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+                command=lambda idx=index: self.edit_invoice(idx)
+            )
             edit_button.grid(row=index + 1, column=len(invoice), padx=10, pady=5)
 
             # Nút xóa invoice
-            delete_button = ctk.CTkButton(self.scrollable_frame, text="Delete", width=60,  # Kích thước cố định cho nút
-                                          command=lambda idx=index: self.delete_invoice(idx))
+            delete_button = ctk.CTkButton(
+                self.scrollable_frame,
+                text="",
+                image=delete_icon,  # Thêm icon xóa
+                width=60,  # Kích thước rộng hơn
+                height=40,  # Chiều cao lớn hơn
+                fg_color="#D9534F",  # Màu nền đỏ cho nút xóa
+                hover_color="#C9302C",  # Màu khi hover đỏ đậm hơn
+                text_color="white",  # Màu chữ trắng
+                corner_radius=10,  # Bo tròn góc nút
+                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+                command=lambda idx=index: self.delete_invoice(idx)
+            )
             delete_button.grid(row=index + 1, column=len(invoice) + 1, padx=10, pady=5)
 
     def create_form(self):
@@ -153,11 +179,31 @@ class InvoiceView(ctk.CTkToplevel):
         self.entry_desc.grid(row=3, column=1, padx=10, pady=5)
 
         # Nút thêm Invoice
-        self.button_add = ctk.CTkButton(master=button_column, text="Add Invoice", command=self.add_invoice)
+        self.button_add = ctk.CTkButton(
+            master=button_column,
+            text="Add Invoice",
+            font=("yu gothic ui", 16, "bold"),
+            fg_color="#43CD80",  # Màu nền đỏ cam nổi bật
+            hover_color="#2E8B57",  # Màu khi di chuột qua
+            corner_radius=15,  # Bo góc cho nút
+            width=150,  # Đặt chiều rộng nút
+            height=40,  # Đặt chiều cao nút
+            command=self.add_invoice
+        )
         self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút sửa Invoice
-        self.button_edit = ctk.CTkButton(master=button_column, text="Update Invoice", command=lambda: self.edit_invoice)
+        self.button_edit = ctk.CTkButton(
+            master=button_column,
+            text="Update Invoice",
+            font=("yu gothic ui", 16, "bold"),
+            fg_color="#FF4040",
+            hover_color="#CD3333",
+            corner_radius=15,  # Bo góc cho nút
+            width=150,  # Đặt chiều rộng nút
+            height=40,  # Đặt chiều cao nút
+            command=lambda: self.edit_invoice
+        )
         self.button_edit.grid(row=1, column=0, pady=5)
 
     def add_invoice(self):

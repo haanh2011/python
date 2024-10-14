@@ -33,7 +33,7 @@ class CustomerView(ctk.CTkToplevel):
         self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780, height=200)  # Giới hạn chiều cao khung
         self.scrollable_frame.pack(pady=10, fill='both', expand=False)  # Không để khung expand
 
-        self.table_headers = ["ID", "Name", "Address", "Phone", "Point"]
+        self.table_headers = ["ID", "Name", "Address", "Phone", "Point", "Actions"]
         self.customers = []  # Danh sách lưu trữ customer
 
         self.create_table()
@@ -94,6 +94,10 @@ class CustomerView(ctk.CTkToplevel):
         # Thiết lập chiều rộng cố định cho các cột
         column_widths = [25, 50, 100, 25, 25]  # Danh sách kích thước cố định của từng cột
 
+        # Tải icon cho các nút
+        edit_icon = ctk.CTkImage(light_image=Image.open("images/edit.png"), size=(20, 20))  # Icon chỉnh sửa
+        delete_icon = ctk.CTkImage(light_image=Image.open("images/remove.png"), size=(20, 20))  # Icon xóa
+
         for index, customer in enumerate(self.customers):
             for j, value in enumerate(customer):
                 label = ctk.CTkLabel(
@@ -106,13 +110,35 @@ class CustomerView(ctk.CTkToplevel):
                 label.grid(row=index + 1, column=j, padx=10, pady=5)
 
             # Nút sửa customer
-            edit_button = ctk.CTkButton(self.scrollable_frame, text="Edit", width=60,  # Kích thước cố định cho nút
-                                        command=lambda idx=index: self.edit_customer(idx))
+            edit_button = ctk.CTkButton(
+                self.scrollable_frame,
+                text="",
+                image=edit_icon,  # Thêm icon chỉnh sửa
+                width=60,  # Kích thước rộng hơn để nhìn cân đối
+                height=40,  # Chiều cao lớn hơn
+                fg_color="#5A9BD5",  # Màu nền xanh dịu mắt
+                hover_color="#41729F",  # Màu khi hover (sáng hơn một chút)
+                text_color="white",  # Màu chữ trắng
+                corner_radius=10,  # Bo tròn góc nút
+                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+                command=lambda idx=index: self.edit_customer(idx)
+            )
             edit_button.grid(row=index + 1, column=len(customer), padx=10, pady=5)
 
             # Nút xóa customer
-            delete_button = ctk.CTkButton(self.scrollable_frame, text="Delete", width=60,  # Kích thước cố định cho nút
-                                          command=lambda idx=index: self.delete_customer(idx))
+            delete_button = ctk.CTkButton(
+                self.scrollable_frame,
+                text="",
+                image=delete_icon,  # Thêm icon xóa
+                width=60,  # Kích thước rộng hơn
+                height=40,  # Chiều cao lớn hơn
+                fg_color="#D9534F",  # Màu nền đỏ cho nút xóa
+                hover_color="#C9302C",  # Màu khi hover đỏ đậm hơn
+                text_color="white",  # Màu chữ trắng
+                corner_radius=10,  # Bo tròn góc nút
+                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+                command=lambda idx=index: self.delete_customer(idx)
+            )
             delete_button.grid(row=index + 1, column=len(customer) + 1, padx=10, pady=5)
 
     def create_form(self):
@@ -169,11 +195,31 @@ class CustomerView(ctk.CTkToplevel):
         self.entry_point.grid(row=4, column=1, padx=10, pady=5)
 
         # Nút thêm Customer
-        self.button_add = ctk.CTkButton(master=button_column, text="Add Customer", command=self.add_customer)
+        self.button_add = ctk.CTkButton(
+            master=button_column,
+            text="Add Customer",
+            font=("yu gothic ui", 16, "bold"),
+            fg_color="#43CD80",  # Màu nền đỏ cam nổi bật
+            hover_color="#2E8B57",  # Màu khi di chuột qua
+            corner_radius=15,  # Bo góc cho nút
+            width=150,  # Đặt chiều rộng nút
+            height=40,  # Đặt chiều cao nút
+            command=self.add_customer
+        )
         self.button_add.grid(row=0, column=0, pady=10)
 
         # Nút sửa Customer
-        self.button_edit = ctk.CTkButton(master=button_column, text="Update Customer", command=lambda: self.edit_customer)
+        self.button_edit = ctk.CTkButton(
+            master=button_column,
+            text="Update Customer",
+            font=("yu gothic ui", 16, "bold"),
+            fg_color="#FF4040",
+            hover_color="#CD3333",
+            corner_radius=15,  # Bo góc cho nút
+            width=150,  # Đặt chiều rộng nút
+            height=40,  # Đặt chiều cao nút
+            command=lambda: self.edit_customer
+        )
         self.button_edit.grid(row=1, column=0, pady=5)
 
     def add_customer(self):
