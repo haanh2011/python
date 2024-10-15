@@ -17,5 +17,6 @@ if __name__ == '__main__':
     # # Khởi chạy giao diện người dùng
     # login_view.mainloop()
 
+    # Đang tắt tạm phần login cho nhanh
     app = MainApplication()  # Khởi động ứng dụng chính
     app.mainloop()
