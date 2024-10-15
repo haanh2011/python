@@ -8,3 +8,4 @@ six==1.16.0
 tzdata==2024.2
 customtkinter~=5.2.2
 pillow~=10.4.0
+customtkinter==5.2.2
