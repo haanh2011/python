@@ -1,5 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
+from customtkinter import CTkFrame
+from matplotlib.table import table
+
+from src.Modules import DataTable
 
 class CategoryView(ctk.CTkToplevel):
     def __init__(self, master):
@@ -29,12 +33,12 @@ class CategoryView(ctk.CTkToplevel):
         )
         self.label_title.pack(pady=10, padx=10)  # Giữ khoảng cách với các thành phần khác
 
-        self.table_frame = ctk.CTkFrame(self, width=780)
-        self.table_frame.pack(fill='both', expand=True, padx=5,pady=5)
-        self.table_header_frame = ctk.CTkFrame(self.table_frame)
-        self.table_header_frame.pack(fill='x', expand=False, padx=5)
-        self.table_body_frame = ctk.CTkScrollableFrame(self.table_frame)
-        self.table_body_frame.pack(fill='both', expand=True)
+        # self.table_frame = ctk.CTkFrame(self, width=780)
+        # self.table_frame.pack(fill='both', expand=True, padx=5,pady=5)
+        # self.table_header_frame = ctk.CTkFrame(self.table_frame)
+        # self.table_header_frame.pack(fill='x', expand=False, padx=5)
+        # self.table_body_frame = ctk.CTkScrollableFrame(self.table_frame)
+        # self.table_body_frame.pack(fill='both', expand=True)
         # Khung cuộn chứa bảng sản phẩm
         # self.scrollable_frame = ctk.CTkScrollableFrame(self, width=780)  # Giới hạn chiều cao khung
         # self.scrollable_frame.pack(pady=10, fill='both', expand=True)  # Không để khung expand
@@ -75,98 +79,106 @@ class CategoryView(ctk.CTkToplevel):
         # Thiết lập chiều rộng cố định cho các cột
         column_widths = [50, 150, 180]  # Danh sách kích thước cố định của từng cột
 
-        # Tạo tiêu đề cho bảng và căn lề trái
-        for header in self.table_headers:
-            label = ctk.CTkLabel(
-                self.table_header_frame,
-                text=header,
-                anchor="center",  # Căn giữa tiêu đề
-                width=column_widths[self.table_headers.index(header)],  # Đặt kích thước cố định cho tiêu đề nếu cần
-                wraplength = 0
-            )
-            label.grid(row=0, column=self.table_headers.index(header), sticky="nsew", padx=10, pady=5)
-
-        # Thêm cột cho các nút (Edit và Delete)
-        self.table_header_frame.grid_columnconfigure(1, weight=1)  # Cột Edit
-        # self.scrollable_frame.grid_columnconfigure(len(self.table_headers) - 2, weight=1)  # Cột Edit
-        # self.scrollable_frame.grid_columnconfigure(len(self.table_headers) - 1, weight=1)  # Cột Delete
+        # # Tạo tiêu đề cho bảng và căn lề trái
+        # for header in self.table_headers:
+        #     label = ctk.CTkLabel(
+        #         self.table_header_frame,
+        #         text=header,
+        #         anchor="center",  # Căn giữa tiêu đề
+        #         width=column_widths[self.table_headers.index(header)],  # Đặt kích thước cố định cho tiêu đề nếu cần
+        #         wraplength = 0
+        #     )
+        #     label.grid(row=0, column=self.table_headers.index(header), sticky="nsew", padx=10, pady=5)
+        #
+        # # Thêm cột cho các nút (Edit và Delete)
+        # self.table_header_frame.grid_columnconfigure(1, weight=1)  # Cột Edit
+        # # self.scrollable_frame.grid_columnconfigure(len(self.table_headers) - 2, weight=1)  # Cột Edit
+        # # self.scrollable_frame.grid_columnconfigure(len(self.table_headers) - 1, weight=1)  # Cột Delete
 
         # Thêm một số sản phẩm mẫu vào danh sách
         self.category = [
-            ["1", "Category A"],
-            ["2", "Category B"],
-            ["3", "Category C"],
-            ["4", "Category D"],
-            ["5", "Category E"],
-            ["6", "Category F"],
-            ["7", "Category G"],
-            ["8", "Category H"],
-            ["1", "Category A"],
-            ["2", "Category B"],
-            ["3", "Category C"],
-            ["4", "Category D"],
-            ["5", "Category E"],
-            ["6", "Category F"],
-            ["7", "Category G"],
-            ["8", "Category H"],
-        ]
+                    ["1", "Category A"],
+                    ["2", "Category B"],
+                    ["3", "Category C"],
+                    ["4", "Category D"],
+                    ["5", "Category E"],
+                    ["6", "Category F"],
+                    ["7", "Category G"],
+                    ["8", "Category H"],
+                    ["9", "Category I"],
+                    ["10", "Category J"],
+                    ["11", "Category K"],
+                    ["12", "Category L"],
+                    ["13", "Category M"],
+                    ["14", "Category N"],
+                    ["15", "Category O"],
+                    ["16", "Category P"],
+                    ["17", "Category Q"],
+                    ["18", "Category R"],
+                ]
 
+        table_main = ctk.CTkFrame(self, width=780)
+        data_table = DataTable(table=table_main,
+                               table_data=self.category,
+                               table_header=self.table_headers,
+                               table_column_width=column_widths
+                               )
+        data_table.draw()
 
-
-        # Tải icon cho các nút
-        edit_icon = ctk.CTkImage(light_image=Image.open("images/edit.png"), size=(20, 20))  # Icon chỉnh sửa
-        delete_icon = ctk.CTkImage(light_image=Image.open("images/remove.png"), size=(20, 20))  # Icon xóa
-
-        for index, cate in enumerate(self.category):
-            row = index + 1
-            for j, value in enumerate(cate):
-                label = ctk.CTkLabel(
-                    self.table_body_frame,
-                    text=value,
-                    width=column_widths[j],  # Đặt kích thước cố định cho mỗi cột
-                    anchor="center",  # Căn văn bản về phía trái
-                    wraplength=0  # Tắt ngắt dòng, đặt giá trị lớn hơn nếu cần
-                )
-                label.grid(row=row, column=j, sticky="nsew", padx=10, pady=5)
-
-            actionFrame = ctk.CTkFrame(self.table_body_frame)
-            actionFrame.grid(row=row, column=len(cate), padx=15, pady=5)
-
-            # Nút sửa loại sản phẩm
-            edit_button = ctk.CTkButton(
-                actionFrame,
-                text="",
-                image=edit_icon,  # Thêm icon chỉnh sửa
-                width=60,  # Kích thước rộng hơn để nhìn cân đối
-                height=40,  # Chiều cao lớn hơn
-                fg_color="#5A9BD5",  # Màu nền xanh dịu mắt
-                hover_color="#41729F",  # Màu khi hover (sáng hơn một chút)
-                text_color="white",  # Màu chữ trắng
-                corner_radius=10,  # Bo tròn góc nút
-                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
-                command=lambda idx=index: self.edit_cate(idx)
-            )
-            edit_button.grid(row=0, column=0, padx=10)
-
-            # Nút xóa loại sản phẩm
-            delete_button = ctk.CTkButton(
-                actionFrame,
-                text="",
-                image=delete_icon,  # Thêm icon xóa
-                width=60,  # Kích thước rộng hơn
-                height=40,  # Chiều cao lớn hơn
-                fg_color="#D9534F",  # Màu nền đỏ cho nút xóa
-                hover_color="#C9302C",  # Màu khi hover đỏ đậm hơn
-                text_color="white",  # Màu chữ trắng
-                corner_radius=10,  # Bo tròn góc nút
-                font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
-                command=lambda idx=index: self.delete_cate(idx)
-            )
-            delete_button.grid(row=0, column=1, padx=10)
-
-            # actionFrame.grid_columnconfigure('all', weight=1)
-
-            self.table_body_frame.grid_columnconfigure(1, weight=1)
+        # # Tải icon cho các nút
+        # edit_icon = ctk.CTkImage(light_image=Image.open("images/edit.png"), size=(20, 20))  # Icon chỉnh sửa
+        # delete_icon = ctk.CTkImage(light_image=Image.open("images/remove.png"), size=(20, 20))  # Icon xóa
+        #
+        # for index, cate in enumerate(self.category):
+        #     row = index + 1
+        #     for j, value in enumerate(cate):
+        #         label = ctk.CTkLabel(
+        #             self.table_body_frame,
+        #             text=value,
+        #             width=column_widths[j],  # Đặt kích thước cố định cho mỗi cột
+        #             anchor="center",  # Căn văn bản về phía trái
+        #             wraplength=0  # Tắt ngắt dòng, đặt giá trị lớn hơn nếu cần
+        #         )
+        #         label.grid(row=row, column=j, sticky="nsew", padx=10, pady=5)
+        #
+        #     actionFrame = ctk.CTkFrame(self.table_body_frame)
+        #     actionFrame.grid(row=row, column=len(cate), padx=15, pady=5)
+        #
+        #     # Nút sửa loại sản phẩm
+        #     edit_button = ctk.CTkButton(
+        #         actionFrame,
+        #         text="",
+        #         image=edit_icon,  # Thêm icon chỉnh sửa
+        #         width=60,  # Kích thước rộng hơn để nhìn cân đối
+        #         height=40,  # Chiều cao lớn hơn
+        #         fg_color="#5A9BD5",  # Màu nền xanh dịu mắt
+        #         hover_color="#41729F",  # Màu khi hover (sáng hơn một chút)
+        #         text_color="white",  # Màu chữ trắng
+        #         corner_radius=10,  # Bo tròn góc nút
+        #         font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+        #         command=lambda idx=index: self.edit_cate(idx)
+        #     )
+        #     edit_button.grid(row=0, column=0, padx=10)
+        #
+        #     # Nút xóa loại sản phẩm
+        #     delete_button = ctk.CTkButton(
+        #         actionFrame,
+        #         text="",
+        #         image=delete_icon,  # Thêm icon xóa
+        #         width=60,  # Kích thước rộng hơn
+        #         height=40,  # Chiều cao lớn hơn
+        #         fg_color="#D9534F",  # Màu nền đỏ cho nút xóa
+        #         hover_color="#C9302C",  # Màu khi hover đỏ đậm hơn
+        #         text_color="white",  # Màu chữ trắng
+        #         corner_radius=10,  # Bo tròn góc nút
+        #         font=("Arial", 12, "bold"),  # Font chữ đậm và lớn
+        #         command=lambda idx=index: self.delete_cate(idx)
+        #     )
+        #     delete_button.grid(row=0, column=1, padx=10)
+        #
+        #     # actionFrame.grid_columnconfigure('all', weight=1)
+        #
+        #     self.table_body_frame.grid_columnconfigure(1, weight=1)
 
     def create_form(self):
         # Cột cho thông tin loại sản phẩm
