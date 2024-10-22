@@ -1,28 +1,22 @@
-from models.user_model import User
-from services.user_service import UserService
-from views.login_view import LoginView
-from controllers.login_controller import LoginController
-from utilities.data_util import read_data_sheet
+import sys, os
 
-if __name__ == '__main__':
-    # print(get_text("vi", "FORMAT_DATE"))  # Output: Xin chào
-    # Đọc dữ liệu từ tệp Excel
-    excel_file = ('data/dataTemplate.xlsx')
-    df = read_data_sheet('data/dataTemplate.xlsx')
-    # In toàn bộ DataFrame
-    print(df)
-    # Tạo các đối tượng của model, service, view và controller
-    user_model = User(excel_file)  # Model
-    user_service = UserService(user_model)  # Service
+current_dir = os.path.dirname(os.path.abspath(__file__))
+views_dir = os.path.join(current_dir , 'views')
+utilities_dir = os.path.join(current_dir, 'utilities')
+sys.path.append(views_dir)
+sys.path.append(utilities_dir)
 
-    # Khởi tạo view trước
-    login_view = LoginView(None)  # View tạm thời không có controller
+from views import main_view
+from utilities import connectdb
 
-    # Khởi tạo controller với view
-    login_controller = LoginController(user_service, login_view)  # Controller với view đã tạo
+# Kiểm tra và tạo database
+connectdb.check_and_create_database()
+connectdb.check_and_create_tables_in_db()
+# connectdb.insert_data_ex()
+# main_view.combobox_lang()
+# Tạo cửa sổ chính
+root = main_view.create_root_window(900, 600)
+main_view.frame_main(root)
 
-    # Gán lại controller vào view
-    login_view.controller = login_controller
-
-    # Khởi chạy giao diện người dùng
-    login_view.mainloop()
+# Chạy vòng lặp chính của ứng dụng
+root.mainloop()

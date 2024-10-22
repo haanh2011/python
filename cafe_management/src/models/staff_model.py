@@ -1,8 +1,14 @@
-from .person_model import Person
+from person_model import Person
 
 class Staff(Person):
-    def __init__(self, full_name, sex, address, phone_number, username, password):
+    def __init__(self, id,name,username,password,phone,address):
+        super().__init__(name, phone, address)
         self.id = id
-        Person.__init__(full_name, sex, address, phone_number)
+        self.name = name
         self.username = username
         self.password = password
+        self.phone = phone
+        self.address = address
+
+    def update_id(self, id):
+        self.id = id

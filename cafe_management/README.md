@@ -1,5 +1,9 @@
-"# python" 
 # Personal Finance Manager
+
+## Version
+```
+python v3.12.6
+```
 
 ## Macos
 ```
@@ -10,7 +14,7 @@ pip3 install -r requirements.txt
 
 ## Window
 ```
-python -m venv venv
+python -m venv .venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```

@@ -7,3 +7,9 @@
 /cafe_management/.idea
 /.idea
 /README.md
+/cafe_management/src/controllers/__pycache__
+/cafe_management/src/helper/__pycache__
+/cafe_management/src/models/__pycache__
+/cafe_management/src/utilities/__pycache__
+/cafe_management/src/views/dialogs/__pycache__
+/cafe_management/src/views/__pycache__

@@ -10,8 +10,13 @@ class Order():
         order_detail = OrderDetail(product, quantity, price)
         self.order_details.append(order_detail)
 
+    def update_id(self, id):
+        self.id = id
 class OrderDetail:
     def __init__(self, id_product, quantity, price):
         self.id_product = id_product  # Có thể là một đối tượng Product
         self.quantity = quantity
         self.price = price
+
+    def update_id(self, id):
+        self.id = id

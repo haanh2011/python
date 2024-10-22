@@ -1,43 +1,52 @@
-import customtkinter
+import tkinter as tk
+from tkinter import ttk, messagebox
 
-class LoginView(customtkinter.CTk):
-    def __init__(self, controller):
-        super().__init__()
-        self.controller = controller  # Lưu controller
-        self.title("Login")
-        self.geometry("400x300")
 
-        # Nhãn tiêu đề
-        self.label_title = customtkinter.CTkLabel(master=self, text="Login", font=("yu gothic ui", 24, "bold"))
-        self.label_title.pack(pady=20)
+def login():
+    username = username_entry.get()
+    password = password_entry.get()
 
-        # Nhãn và ô nhập tên người dùng
-        self.label_username = customtkinter.CTkLabel(master=self, text="Username")
-        self.label_username.pack(pady=(10, 0))
-        self.entry_username = customtkinter.CTkEntry(master=self, placeholder_text="Enter your username")
-        self.entry_username.pack(pady=(0, 10))
+    # Thay thế đoạn này bằng logic xác thực thực tế của bạn
+    if username == "1" and password == "1":
+        messagebox.showinfo("Success", "Đăng nhập thành công!")
+    else:
+        messagebox.showerror("Error", "Tên đăng nhập hoặc mật khẩu không đúng!")
 
-        # Nhãn và ô nhập mật khẩu
-        self.label_password = customtkinter.CTkLabel(master=self, text="Password")
-        self.label_password.pack(pady=(10, 0))
-        self.entry_password = customtkinter.CTkEntry(master=self, placeholder_text="Enter your password", show='*')
-        self.entry_password.pack(pady=(0, 20))
 
-        # Khởi tạo nút đăng nhập
-        self.button_login = customtkinter.CTkButton(master=self, text="Login", command=self.handle_login)
-        self.button_login.pack(pady=10)
+def create_login_frame(root_frame):
+    # Tạo frame để chứa các phần tử của form đăng nhập
+    form_frame = ttk.Frame(root_frame, padding=(20, 10))
+    form_frame.pack(fill="both", expand=True)
 
-    def handle_login(self):
-        if self.controller is not None:
-            self.controller.handle_login()  # Gọi phương thức handle_login từ controller
-        else:
-            print("Controller is not set")
+    # Tạo nhãn tiêu đề
+    title_label = ttk.Label(form_frame, text="Đăng Nhập", font=("Helvetica", 16, "bold"))
+    title_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
 
-    def get_username(self):
-        return self.entry_username.get()
+    # Tạo nhãn và trường nhập cho tên đăng nhập và mật khẩu
+    username_label = ttk.Label(form_frame, text="Tên đăng nhập:")
+    username_label.grid(row=1, column=0, sticky="w", pady=(5, 0))
+    username_entry = ttk.Entry(form_frame)
+    username_entry.grid(row=1, column=1, sticky="ew", pady=(5, 0))
 
-    def get_password(self):
-        return self.entry_password.get()
+    password_label = ttk.Label(form_frame, text="Mật khẩu:")
+    password_label.grid(row=2, column=0, sticky="w", pady=(5, 0))
+    password_entry = ttk.Entry(form_frame, show="*")  # Ẩn mật khẩu
+    password_entry.grid(row=2, column=1, sticky="ew", pady=(5, 10))
 
-    def show_message(self, message):
-        print(message)
+    # Tạo nút đăng nhập
+    login_button = ttk.Button(form_frame, text="Đăng Nhập", command=login)
+    login_button.grid(row=3, column=0, columnspan=2, pady=10)
+
+    # Thay đổi màu nền cho button
+    login_button.configure(style="TButton")
+
+    # Tạo kiểu cho button
+    style = ttk.Style()
+    style.configure("TButton", padding=6, relief="flat", background="#4CAF50", foreground="black",
+                    font=("Helvetica", 10, "bold"))
+    style.map("TButton", background=[("active", "#45a049")])  # Màu nền khi nhấn
+
+    # Điều chỉnh trọng số cột để làm cho form phản hồi tốt hơn
+    form_frame.columnconfigure(1, weight=1)
+
+    return form_frame

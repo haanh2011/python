@@ -1,6 +1,11 @@
-class Person():
-    def __init__(self, full_name, sex,address, phone_number):
-        self.full_name = full_name
-        self.sex = sex
+class Person:
+    def __init__(self, name, phone, address):
+        self.name = name
+        self.phone = phone
         self.address = address
-        self.phone_number = phone_number
+    def getinfo(self):
+        print("Họ tên: ", self.name)
+        print("Địa chỉ: ", self.address)
+        print("SĐT: ", self.phone)
+    def __del__(self):
+        print('Class Person được hủy')

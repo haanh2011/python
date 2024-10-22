@@ -1,3 +1,6 @@
-from . import category_model, customer_model, invoice_model, order_model, product_model, staff_model, user_model
-
-__version__ = "1.0.0"
+from category_model import *
+from customer_model import *
+from invoice_model import *
+from order_model import *
+from product_model import *
+from staff_model import *
