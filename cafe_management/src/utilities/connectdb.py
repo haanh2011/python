@@ -6,7 +6,7 @@ import configparser
 
 HOST = 'localhost'
 USER = 'root'
-PASSWORD = 'Abc123'
+PASSWORD = 'Truonggiang1701'
 DB_NAME = 'ql_bancaphe'
 
 

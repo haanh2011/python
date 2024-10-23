@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 controllers_dir = os.path.join(current_dir, '../controllers')
 sys.path.append(controllers_dir)
 import window
-import order_controller
+import src.controllers.order_controller as order_controller
 
 display_name = "Orders"
 display_name_detail = "Order Details"
@@ -50,7 +50,7 @@ def create_frame(frame_parent):
     # Merge the data into a list of tuples
     rows = []
     for order in order_rows:
-        order_details = [detail for detail in order_detail_rows if detail[1] == order[0]]
+        order_details = [detail for detail in order_rows if detail[1] == order[0]]
 
         # Tạo hàng con cho mỗi chi tiết
         for detail in order_details:
