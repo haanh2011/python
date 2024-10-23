@@ -1,155 +1,111 @@
-import re
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 
-class Model:
-    def __init__(self, email):
-        self.email = email
+# Tạo hàm chứa add list product cho order
+def create_entry_add_list_product(form_frame, product_values, idx, product_list):
+    # Label for Product
+    product_label = tk.Label(form_frame, text="Product:")
+    product_label.grid(row=idx + 1, column=0, sticky="ew")
 
-    @property
-    def email(self):
-        return self.__email
+    # Combobox để nhập tên sản phẩm
+    selected_data = tk.StringVar()
+    product_combobox = ttk.Combobox(form_frame, textvariable=selected_data, values=product_values, width=35,
+                                    state="readonly")
+    product_combobox.grid(row=idx + 1, column=1, sticky="ew")
 
-    @email.setter
-    def email(self, value):
-        """
-        Validate the email
-        :param value:
-        :return:
-        """
-        pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        if re.fullmatch(pattern, value):
-            self.__email = value
-        else:
-            raise ValueError(f'Invalid email address: {value}')
+    # Label for Quantity
+    quantity_label = tk.Label(form_frame, text="Quantity:")
+    quantity_label.grid(row=idx + 2, column=0, sticky="ew")
+    quantity_entry = tk.Entry(form_frame)
+    quantity_entry.grid(row=idx + 2, column=1, sticky="ew")
 
-    def save(self):
-        """
-        Save the email into a file
-        :return:
-        """
-        with open('emails.txt', 'a') as f:
-            f.write(self.email + '\n')
+    # Treeview to display added products
+    tree = ttk.Treeview(form_frame, columns=("Id", "Name", "Quantity"), show="headings")
 
-class View(ttk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent)
+    # Set up Treeview columns and headers
+    tree.heading("Id", text="Id")
+    tree.heading("Name", text="Name")
+    tree.heading("Quantity", text="Quantity")
+    tree.column("Id", anchor="center", width=50)
+    tree.column("Name", anchor="w", width=150)
+    tree.column("Quantity", anchor="center", width=100)
 
-        # create widgets
-        # label
-        self.label = ttk.Label(self, text='Email:')
-        self.label.grid(row=1, column=0)
+    tree.grid(row=idx + 4, column=0, columnspan=2, sticky="ew")
 
-        # email entry
-        self.email_var = tk.StringVar()
-        self.email_entry = ttk.Entry(self, textvariable=self.email_var, width=30)
-        self.email_entry.grid(row=1, column=1, sticky=tk.NSEW)
+    def add_product():
+        """Xử lý khi nhấn nút Add."""
+        # Get product id and name from the combobox
+        product_id = product_combobox.get().split("-")[0].strip()
+        product_name = product_combobox.get().split("-")[1].strip()
+        quantity = quantity_entry.get().strip()
 
-        # save button
-        self.save_button = ttk.Button(self, text='Save', command=self.save_button_clicked)
-        self.save_button.grid(row=1, column=3, padx=10)
+        if not product_id or not quantity:
+            messagebox.showwarning("Input Error", "Both product name and quantity are required.")
+            return
 
-        # message
-        self.message_label = ttk.Label(self, text='', foreground='red')
-        self.message_label.grid(row=2, column=1, sticky=tk.W)
-
-        # set the controller
-        self.controller = None
-
-    def set_controller(self, controller):
-        """
-        Set the controller
-        :param controller:
-        :return:
-        """
-        self.controller = controller
-
-    def save_button_clicked(self):
-        """
-        Handle button click event
-        :return:
-        """
-        if self.controller:
-            self.controller.save(self.email_var.get())
-
-    def show_error(self, message):
-        """
-        Show an error message
-        :param message:
-        :return:
-        """
-        self.message_label['text'] = message
-        self.message_label['foreground'] = 'red'
-        self.message_label.after(3000, self.hide_message)
-        self.email_entry['foreground'] = 'red'
-
-    def show_success(self, message):
-        """
-        Show a success message
-        :param message:
-        :return:
-        """
-        self.message_label['text'] = message
-        self.message_label['foreground'] = 'green'
-        self.message_label.after(3000, self.hide_message)
-
-        # reset the form
-        self.email_entry['foreground'] = 'black'
-        self.email_var.set('')
-
-    def hide_message(self):
-        """
-        Hide the message
-        :return:
-        """
-        self.message_label['text'] = ''
-
-
-class Controller:
-    def __init__(self, model, view):
-        self.model = model
-        self.view = view
-
-    def save(self, email):
-        """
-        Save the email
-        :param email:
-        :return:
-        """
         try:
+            quantity = int(quantity)
+        except ValueError:
+            messagebox.showwarning("Input Error", "Quantity must be a number.")
+            return
 
-            # save the model
-            self.model.email = email
-            self.model.save()
+        # Add product data to the passed product_list
+        product_list.append((product_id, product_name, quantity))
 
-            # show a success message
-            self.view.show_success(f'The email {email} saved!')
+        # Add product to Treeview
+        tree.insert("", "end", values=(product_id, product_name, quantity))
 
-        except ValueError as error:
-            # show an error message
-            self.view.show_error(error)
+        # Clear input fields
+        product_combobox.set('')
+        quantity_entry.delete(0, tk.END)
 
-class App(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def save_products():
+        """Xử lý khi nhấn nút Save."""
+        # Get all items from Treeview
+        products_in_tree = []
+        for item in tree.get_children():
+            product_data = tree.item(item, 'values')
+            products_in_tree.append(product_data)
 
-        self.title('Tkinter MVC Demo')
+        if not products_in_tree:
+            messagebox.showwarning("Save Error", "No products to save.")
+        else:
+            # Show saved data (You can handle the data however you need here)
+            print("Saved Products:", products_in_tree)
+            messagebox.showinfo("Success", "Products saved successfully!")
+            # Optionally, return or process this data further
 
-        # create a model
-        model = Model('hello@pythontutorial.net')
+    # Button to add product
+    add_button = tk.Button(form_frame, text="Add", command=add_product)
+    add_button.grid(row=idx + 3, column=0, columnspan=1, sticky="ew")
 
-        # create a view and place it on the root window
-        view = View(self)
-        view.grid(row=0, column=0, padx=10, pady=10)
-
-        # create a controller
-        controller = Controller(model, view)
-
-        # set the controller to view
-        view.set_controller(controller)
+    # Button to save products
+    save_button = tk.Button(form_frame, text="Save", command=save_products)
+    save_button.grid(row=idx + 3, column=1, columnspan=1, sticky="ew")
 
 
-if __name__ == '__main__':
-    app = App()
-    app.mainloop()
+# Sample usage of the function
+def main():
+    root = tk.Tk()
+    root.title("Order Form")
+
+    # Frame for form
+    form_frame = tk.Frame(root)
+    form_frame.pack(padx=10, pady=10)
+
+    # Sample product data to show in combobox
+    product_values = ["1 - Product A", "2 - Product B", "3 - Product C"]
+
+    # Initialize product list data (this will be updated inside the function)
+    product_list_data = []
+
+    # Call the function to create product input form
+    create_entry_add_list_product(form_frame, product_values, 0, product_list_data)
+
+    root.mainloop()
+
+
+# Run the example
+if __name__ == "__main__":
+    main()

@@ -27,9 +27,10 @@ def get_data_detail(order_id):
     return connectdb.get_data_by_value(TYPE_NAME_DETAIL, "order_id", order_id)
 
 def insert(data):
-    item = order_model.Order(**data)
-    item.update_id(connectdb.generate_id(TYPE_NAME))
-    return connectdb.insert_data(TYPE_NAME, item)
+    print("data order", data)
+    # item = order_model.Order(**data)
+    # item.update_id(connectdb.generate_id(TYPE_NAME))
+    # return connectdb.insert_data(TYPE_NAME, item)
 
 
 def insert_details(data):

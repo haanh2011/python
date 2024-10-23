@@ -28,13 +28,11 @@ def set_data_init():
 def get_all_data():
     return product_controller.get_data()
 
-
 def create_frame(frame_parent):
     rows = product_controller.get_data()
     set_data_init()
     frame = window.create_frame_actions_treeview(product_controller, frame_parent, display_name, columns, rows)
     return frame
-
 
 def create_button_menu(dashboard_frame, frame, buttons, frames):
     btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames)

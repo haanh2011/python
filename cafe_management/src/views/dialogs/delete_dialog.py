@@ -10,32 +10,31 @@ sys.path.append(views_dir)
 import styles
 import window
 
+def show_dialog(controller, frame_parent, data_id, on_success=None):
 
-def show_dialog(controller, frame_parent, data_id):
-    # Create and show the dialog
-    width = 400
-    height = 200
-
-    # Create and show the dialog
+    # Thiết lập kích thước dialog
+    width, height = 400, 100
     dialog_delete = window.create_dialog(frame_parent, "Delete Data Form", width, height)
-    # Create a frame to hold the form elements
+
+    # Tạo frame để chứa các phần tử của form
     form_frame = ttk.Frame(dialog_delete, padding=(20, 10))
     form_frame.pack(fill="both", expand=True)
 
-    # Create labels and entry fields
-    name_label = ttk.Label(form_frame, text="Bạn có muốn delete")
-    name_label.grid(row=0, column=0, sticky="w")
+    # Tạo nhãn xác nhận với dữ liệu động
+    name_label = ttk.Label(form_frame, text=f"Bạn có muốn xóa {data_id}?")
+    name_label.grid(row=0, column=0, columnspan=2, sticky="w")
 
-    # Create labels and entry fields
-    btn_ok = tk.Button(form_frame, text="Save", command=lambda: on_save(data_id))
-    btn_ok.grid(row=1, column=0, sticky="ew")
-    btn_cancel = tk.Button(form_frame, text="Cancel", command=lambda: on_cancel())
-    btn_cancel.grid(row=1, column=1, sticky="ew")
+    # Tạo nút "Save" và "Cancel"
+    btn_ok = ttk.Button(form_frame, text="Save", command=lambda: on_save(), style="Save.TButton")
+    btn_ok.grid(row=1, column=0, sticky="ew", pady=10)
 
-    def on_save(data_id):
-        controller.delete(data_id)
-        dialog_delete.destroy()
-        messagebox.showinfo("Success", "Xoá dữ liệu thành công!")
+    btn_cancel = ttk.Button(form_frame, text="Cancel", command=dialog_delete.destroy, style="Cancel.TButton")
+    btn_cancel.grid(row=1, column=1, sticky="ew", pady=10)
 
-    def on_cancel():
-        dialog_delete.destroy()
+    def on_save():
+        controller.delete(data_id)  # Gọi controller để xóa dữ liệu
+        dialog_delete.destroy()  # Đóng dialog
+        messagebox.showinfo("Success", "Xoá dữ liệu thành công!")  # Thông báo thành công
+
+        if on_success:
+            on_success()  # Gọi callback để cập nhật Treeview

@@ -1,6 +1,7 @@
 import os
 import sys
-
+from tkinter import Tk, Label
+from PIL import Image, ImageTk
 current_dir = os.path.dirname(os.path.abspath(__file__))
 utilities_dir = os.path.join(current_dir, '../utilities')
 sys.path.append(utilities_dir)
@@ -16,21 +17,6 @@ import order_view
 import product_view
 import staff_view
 
-# utilities_dir = os.path.join(current_dir, '../utilities')
-# sys.path.append(utilities_dir)
-#
-# import languages
-#
-#
-# def combobox_lang():
-#     # Duyệt qua các biến trong module 'languages' và lọc ra các từ điển ngôn ngữ, bỏ qua __builtins__
-#     language_dictionaries = {name: value for name, value in vars(languages).items() if
-#                              isinstance(value, dict) and name != "__builtins__"}
-#
-#     # In ra số lượng và tên các ngôn ngữ
-#     print(f"Found {len(language_dictionaries)} languages: {list(language_dictionaries.keys())}")
-#
-
 def create_root_window(width, height):
     return window.create_root_window(width, height)
 
@@ -38,8 +24,36 @@ def frame_main(frame_root):
     window.create_header(frame_root)
 
     # Create frame for the left menu
-    dashboard_frame = window.create_frame(frame_root, "dashboard_frame")
+    dashboard_frame = window.create_frame(frame_root, "dashboard_frame", bg="")
     dashboard_frame.pack(side="left", fill="y", padx=(10, 10))
+
+    # Tải hình ảnh
+    image_logo_path = "images/home_bg.jpg"
+    image_logo = Image.open(image_logo_path)
+    image_bg_path = "images/bg.jpg"
+    image_bg = Image.open(image_bg_path)
+
+    # Đặt kích thước cho hình ảnh
+    # new_size = (100, 100)  # Kích thước mới (width, height)
+    new_size = (180, 100)  # Kích thước mới (width, height)
+    image_resized = image_logo.resize(new_size, Image.LANCZOS)  # Resize hình ảnh
+
+    # Chuyển đổi hình ảnh đã thay đổi kích thước thành PhotoImage
+    logo = ImageTk.PhotoImage(image_resized)
+    bg = ImageTk.PhotoImage(image_bg)
+
+    # Thêm hình ảnh vào dashboard_frame
+    # Thêm hình nền trước
+    image_label_bg = Label(dashboard_frame, image=bg)
+    image_label_bg.place(relwidth=1, relheight=1)  # Đặt hình nền lấp đầy khung
+
+    # Thêm logo lên trên hình nền
+    image_label_logo = Label(dashboard_frame, image=logo)
+    image_label_logo.pack(padx=5, pady=10)  # Đặt khoảng cách cho hình ảnh
+
+    # Giữ tham chiếu đến photo để tránh garbage collection
+    image_label_logo.image = logo  # Lưu giữ tham chiếu đến PhotoImage
+    image_label_bg.image = bg  # Lưu giữ tham chiếu đến PhotoImage
 
     # Create the content frame
     fr_category = category_view.create_frame(frame_root)

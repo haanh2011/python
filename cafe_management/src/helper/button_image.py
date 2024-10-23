@@ -25,8 +25,8 @@ def load_image_button(image_path, size=(20, 20)):
         messagebox.showerror("Error", f"Failed to load image: {str(e)}")
         return None
 
-def create_image_button(parent, name, text="", image_path=None, command=None, size=(20, 20), tooltip_text=None,
-                        compound="left",state=tk.NORMAL, **kwargs):
+def create_image_button(parent, name, text="", image_path=None, command=None, size=(25, 25), tooltip_text=None,
+                        compound="left", bg="#4CAF50", fg=None, state=tk.NORMAL, **kwargs):
     """
     Tạo một nút với hình ảnh và thêm vào cha của nó (parent), với khả năng tùy chỉnh cao.
 
@@ -43,13 +43,13 @@ def create_image_button(parent, name, text="", image_path=None, command=None, si
     """
     # Thiết lập các thuộc tính mặc định cho nút
     default_button_styles = {
-        "bg": "#4CAF50",
-        "fg": styles.FOREGROUND_COLOR,
+        "bg": bg,
+        "fg": fg if fg is not None else "white",  # Màu chữ mặc định
         "font": styles.get_button_actions_font(),
         "activebackground": "#3E8E41",
         "activeforeground": styles.BUTTON_FOREGROUND_COLOR,
-        "padx": 8,
-        "pady": 4,
+        "padx": 10,
+        "pady": 5,
         "relief": tk.FLAT,
         "borderwidth": 0,
         "highlightthickness": 0
@@ -69,8 +69,13 @@ def create_image_button(parent, name, text="", image_path=None, command=None, si
     # Tạo đối tượng Button với hình ảnh và văn bản
     btn = tk.Button(parent, text=text, command=command, image=photo, compound=compound, **button_styles, state=state)
 
-    if photo:
-        btn.image = photo  # Giữ tham chiếu ảnh để nó không bị xóa bởi garbage collector
+    # Nếu có hình ảnh, tải hình ảnh
+    if image_path:
+        photo = load_image_button(image_path, size)
+        if photo is not None:
+            btn.config(image=photo)
+            btn.image = photo  # Giữ tham chiếu ảnh để nó không bị xóa bởi garbage collector
+
     btn._name = name  # Đặt tên cho nút để tham chiếu sau
 
     # Nếu có tooltip text, tạo tooltip cho nút

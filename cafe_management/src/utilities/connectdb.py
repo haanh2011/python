@@ -1,6 +1,3 @@
-from site import PREFIXES
-from sys import prefix
-
 import mysql.connector
 import configparser
 
@@ -11,20 +8,28 @@ DB_NAME = 'ql_bancaphe'
 
 
 def connect_mysql():
-    config = configparser.ConfigParser()
-    config.read('./config.ini')
+    # config = configparser.ConfigParser()
+    # config.read('./config.ini')
+    # print(config)
     # Connect to MySQL server
+    # db = mysql.connector.connect(
+    #     host = config['Database']['host'],
+    #     user = config['Database']['user'],
+    #     password = config['Database']['password'],
+    #     database = config['Database']['database'],
+    # )
     db = mysql.connector.connect(
         host=HOST,
-        user=USER,
-        password=PASSWORD
+        user = USER,
+        password = PASSWORD
     )
     return db
 
 
 def connect_db():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
+    # config = configparser.ConfigParser()
+    # config.read('config.ini')
+    # print(config)
     # Connect to MySQL server
     db = mysql.connector.connect(
         host=HOST,
@@ -139,7 +144,7 @@ def check_and_create_tables_in_db():
                            + " id CHAR(20) PRIMARY KEY,"
                            + " name VARCHAR(150) NOT NULL,"
                            + " username VARCHAR(100) NOT NULL,"
-                           + " password VARCHAR(50) NOT NULL,"
+                           + " password VARCHAR(255) NOT NULL,"
                            + " phone VARCHAR(10),"
                            + " address VARCHAR(255),"
                            + " is_delete tinyint(1) NOT NULL DEFAULT '0'"
@@ -242,7 +247,7 @@ def get_data(type_name):
     db = connect_db()
     cursor = db.cursor()
     try:
-        cursor.execute(f"SELECT * FROM {type_name} WHERE is_delete = 0")
+        cursor.execute(f"SELECT * FROM `{DB_NAME}`.`{type_name}` WHERE is_delete = 0")
         data = cursor.fetchall()
         return data
 
@@ -283,7 +288,7 @@ def generate_id(table_name):
         prefix = PREFIXES[table_name]
 
         # Truy vấn lấy ID lớn nhất có cùng tiền tố
-        sql = f"SELECT MAX(id) FROM {table_name} WHERE id LIKE '{prefix}%'"
+        sql = f"SELECT MAX(id) FROM `{DB_NAME}`.`{table_name}` WHERE id LIKE '{prefix}%'"
         mycursor.execute(sql)
 
         # Lấy kết quả
@@ -332,7 +337,7 @@ def insert_data(table_name, data):
         # Chuẩn bị câu lệnh SQL
         columns = ', '.join(attributes.keys())
         placeholders = ', '.join(['%s'] * len(attributes))
-        sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+        sql = f"INSERT INTO `{DB_NAME}`.`{table_name}` ({columns}) VALUES ({placeholders})"
 
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
@@ -377,11 +382,12 @@ def update_data(table_name, data, data_id):
 
         # Chuẩn bị câu lệnh SQL
         set_clause = ', '.join([f"{key} = %s" for key in attributes])
-        sql = f"UPDATE {table_name} SET {set_clause} WHERE id = '{data_id}'"
+        sql = f"UPDATE `{DB_NAME}`.`{table_name}` SET {set_clause} WHERE id = '{data_id}'"
         print("sql",sql)
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
         print(sql % values)
+        print("values", values)
         # Thực hiện câu lệnh UPDATE với các giá trị dữ liệu
         cursor.execute(sql, values)
 
