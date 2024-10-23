@@ -150,16 +150,18 @@ def configure_treeview_style():
 def dialog():
     # Tạo style tùy chỉnh
     style = ttk.Style()
+
     # Cấu hình style cho Label
     style.configure("TLabel",
                     font=("Helvetica", 12),  # Tăng kích thước font cho Label
-                    # foreground="#333333",
+                    foreground=TEXT_COLOR_BLACK,
+                    background="#f0f0f0",  # Màu nền
                     padding=[10, 10])
 
     # Cấu hình style cho Entry
     style.configure("TEntry",
                     font=("Helvetica", 12),  # Tăng kích thước font cho Entry
-                    padding=[10, 15],  # Tăng padding trên và dưới để chiều cao lớn hơn
+                    padding=[10, 10],  # Tăng padding trên và dưới để chiều cao lớn hơn
                     relief="flat",
                     foreground="#1a1a1a",  # Màu chữ tối
                     background="#ffffff")  # Màu nền trắng

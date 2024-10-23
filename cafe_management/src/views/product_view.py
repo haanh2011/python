@@ -8,7 +8,7 @@ import window
 import product_controller
 import category_view
 
-display_name = "Products"
+display_name = "Sản Phẩm"
 
 columns = {
     "widget_type": ["Entry", "Combobox", "Entry", "Entry", "Text"],

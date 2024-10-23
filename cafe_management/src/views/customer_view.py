@@ -8,7 +8,7 @@ import window
 import customer_controller
 
 name = "customers"
-display_name = "Customers"
+display_name = "Khách Hàng"
 columns = {
     "widget_type": ["Entry", "Entry", "Entry", "Entry", "Entry"],
     "columns_name_display": ["Mã", "Tên", "Điện thoại", "Địa chỉ", "Điểm"],

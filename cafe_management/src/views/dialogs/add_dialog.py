@@ -11,7 +11,6 @@ sys.path.append(views_dir)
 import styles
 import window
 
-
 def show_dialog(controller, frame_parent, dict_cols, type_name, on_success=None):
     """
     Hiển thị hộp thoại thêm dữ liệu.
@@ -33,7 +32,7 @@ def show_dialog(controller, frame_parent, dict_cols, type_name, on_success=None)
     max_height = int(screen_height * 0.6)
     height = min(height, max_height)
 
-    dialog_add = window.create_dialog(frame_parent, f"Add {type_name} Form", width, height)
+    dialog_add = window.create_dialog(frame_parent, f"Form thêm {type_name}", width, height)
 
     # Gọi hàm dialog từ file styles.py để áp dụng style
     styles.dialog()

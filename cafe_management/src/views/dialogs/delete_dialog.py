@@ -13,7 +13,7 @@ import window
 def show_dialog(controller, frame_parent, data_id, on_success=None):
 
     # Thiết lập kích thước dialog
-    width, height = 400, 100
+    width, height = 450, 110
     dialog_delete = window.create_dialog(frame_parent, "Delete Data Form", width, height)
 
     # Tạo frame để chứa các phần tử của form

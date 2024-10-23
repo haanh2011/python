@@ -7,7 +7,7 @@ sys.path.append(controllers_dir)
 
 import category_controller
 import window
-display_name = "Categories"
+display_name = "Loại Sản Phẩm"
 columns = {
     "widget_type": ["Entry", "Entry"],
     "columns_name_display": ["Mã loại", "Tên loại sản phẩm"], #Tên column hiển thị trên grid view

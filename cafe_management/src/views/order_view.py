@@ -7,8 +7,8 @@ sys.path.append(controllers_dir)
 import window
 import order_controller, customer_view, product_view
 
-display_name = "Orders"
-display_name_detail = "Order Details"
+display_name = "Đơn Hàng"
+display_name_detail = "Chi Tiết Đơn Hàng"
 
 column_orders = {
     "widget_type": ["Entry", "Combobox", "Product_list"],

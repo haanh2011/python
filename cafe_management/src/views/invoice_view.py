@@ -8,7 +8,7 @@ sys.path.append(controllers_dir)
 import window
 import invoice_controller, order_view
 
-display_name = "Invoices"
+display_name = "Hóa Đơn"
 columns = {
     "widget_type": ["Entry", "Combobox", "Date"],
     "columns_name_display": ["Mã", "Mã đơn hàng", "Ngày tạo"],
@@ -16,7 +16,6 @@ columns = {
     "data_init": {"id": "", "order_id": {}, "invoice_date": datetime.datetime.now()},
     "validates": ["string", "string", "datetime"]
 }
-
 
 def set_data_init():
     orders = order_view.get_all_data()

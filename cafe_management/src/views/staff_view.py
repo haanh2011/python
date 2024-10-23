@@ -7,7 +7,7 @@ sys.path.append(controllers_dir)
 import window
 import staff_controller
 
-display_name = "Staffs"
+display_name = "Nhân Viên"
 
 columns = {
     "widget_type": ["Entry", "Entry", "Entry", "Entry", "Entry", "Entry"],

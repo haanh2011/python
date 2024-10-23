@@ -17,7 +17,7 @@ def show_dialog(controller, frame_parent, dict_cols, type_name, data, on_success
         return
 
     # Thiết lập chiều rộng
-    width = 430
+    width = 450
 
     # Tính toán chiều cao tùy theo số lượng phần tử
     row_height = 50  # Chiều cao trung bình cho mỗi hàng (có thể điều chỉnh nếu cần)
@@ -25,7 +25,7 @@ def show_dialog(controller, frame_parent, dict_cols, type_name, data, on_success
     height = (row_index + 2) * row_height  # Thêm 2 cho nút lưu và hủy
 
     # Tạo và hiển thị dialog
-    dialog_update = window.create_dialog(frame_parent, "Update Data Form", width, height)
+    dialog_update = window.create_dialog(frame_parent, f"Form cập nhật {type_name} ", width, height)
 
     # Gọi hàm dialog từ file styles.py để áp dụng style
     styles.dialog()
