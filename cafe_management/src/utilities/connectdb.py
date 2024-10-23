@@ -20,8 +20,8 @@ def connect_mysql():
     # )
     db = mysql.connector.connect(
         host=HOST,
-        user = USER,
-        password = PASSWORD
+        user=USER,
+        password=PASSWORD
     )
     return db
 
@@ -201,7 +201,8 @@ def insert_data_ex():
     insert_data("customers",
                 {"id": "CUST0001", "name": "John Doe", "phone": "1234567890", "address": "123 Main St", "is_delete": 0})
     insert_data("customers",
-                {"id": "CUST0002", "name": "Jane Smith", "phone": "9876543210", "address": "456 Elm St", "is_delete": 0})
+                {"id": "CUST0002", "name": "Jane Smith", "phone": "9876543210", "address": "456 Elm St",
+                 "is_delete": 0})
 
     insert_data("staffs", {"id": "STAFF0001", "name": "Alice Johnson", "username": "alice", "password": "password123",
                            "phone": "5555555555", "address": "789 Oak St", "is_delete": 0})
@@ -227,11 +228,11 @@ def insert_data_ex():
                              "is_delete": 0})
 
 
-def get_data_by_value(type_name,col_name, value):
+def get_data_by_value(type_name, col_name, value):
     db = connect_db()
     cursor = db.cursor()
     try:
-        cursor.execute(f"SELECT * FROM {type_name} WHERE is_delete = 0 AND {col_name} = {value}")
+        cursor.execute(f"SELECT * FROM {DB_NAME}.{type_name} WHERE is_delete = 0 AND {col_name} = '{value}'")
         data = cursor.fetchall()
         return data
 
@@ -242,6 +243,7 @@ def get_data_by_value(type_name,col_name, value):
         # Close the cursor and connection
         cursor.close()
         db.close()
+
 
 def get_data(type_name):
     db = connect_db()
@@ -316,8 +318,6 @@ def generate_id(table_name):
             mydb.close()
 
 
-
-
 def insert_data(table_name, data):
     """Chèn dữ liệu đã cho vào cơ sở dữ liệu MySQL.
 
@@ -341,8 +341,8 @@ def insert_data(table_name, data):
 
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
-        print("values", sql% values)
-        #Thực hiện câu lệnh INSERT với các giá trị dữ liệu
+        print("values", sql % values)
+        # Thực hiện câu lệnh INSERT với các giá trị dữ liệu
         cursor.execute(sql, values)
 
         # Commit thay đổi vào cơ sở dữ liệu
@@ -359,6 +359,7 @@ def insert_data(table_name, data):
             cursor.close()
         if cnx:
             cnx.close()
+
 
 def update_data(table_name, data, data_id):
     """Cập nhật dữ liệu trong cơ sở dữ liệu MySQL.
@@ -383,7 +384,7 @@ def update_data(table_name, data, data_id):
         # Chuẩn bị câu lệnh SQL
         set_clause = ', '.join([f"{key} = %s" for key in attributes])
         sql = f"UPDATE `{DB_NAME}`.`{table_name}` SET {set_clause} WHERE id = '{data_id}'"
-        print("sql",sql)
+        print("sql", sql)
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
         print(sql % values)

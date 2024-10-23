@@ -7,9 +7,10 @@ sys.path.append(controllers_dir)
 import window
 import order_controller, customer_view, product_view
 
+name = "orders"
+name_details = "order_details"
 display_name = "Đơn Hàng"
 display_name_detail = "Chi Tiết Đơn Hàng"
-
 column_orders = {
     "widget_type": ["Entry", "Combobox", "Product_list"],
     "columns_name_display": ["Mã", "Khách hàng", "Ngày tạo"],
@@ -29,34 +30,38 @@ column_order_details = {
 
 
 def get_all_data():
-    return order_controller.get_data()
+    return order_controller.get_data(name)
 
 
-def get_all_data_details():
-    return order_controller.get_data_detailsget_data_details()
+def get_all_data_details(order_id):
+    return order_controller.get_data_details(name_details, order_id)
 
 
 def set_data_init():
     customers = customer_view.get_all_data()
     column_orders["data_init"]["customer_id"]["combobox_values"] = [(f"{item[0]} - {item[1]}") for item in customers]
     products = product_view.get_all_data()
-    column_orders["data_init"]["products_info"]["combobox_values"] = [(f"{item[0]} - {item[2]} - {item[3]}") for item in products]
+    column_orders["data_init"]["products_info"]["combobox_values"] = [(f"{item[0]} - {item[2]} - {item[3]}") for item in
+                                                                      products]
+    print("customers", customers)
+    print("products", products)
 
 
 def create_frame(frame_parent):
-    rows = get_all_data()
+    data = get_all_data()
     set_data_init()
-    frame = window.create_frame_actions_treeview(order_controller, frame_parent, display_name, column_orders, rows)
+    frame = window.create_frame_actions_treeview(order_controller, frame_parent, name, display_name, column_orders,
+                                                 data)
     return frame
 
 
-def create_frame_details(frame_parent):
-    rows = get_all_data_details()
-    frame = window.create_frame_actions_treeview(order_controller, frame_parent, display_name, column_order_details,
-                                                 rows)
+def create_frame_details(frame_parent, order_id):
+    rows = get_all_data_details(order_id)
+    frame = window.create_frame_treeview_details(order_controller, frame_parent, name_details, display_name,
+                                                 column_order_details, rows)
     return frame
 
 
 def create_button_menu(dashboard_frame, frame, buttons, frames):
-    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames)
+    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames, set_data_init)
     return btn

@@ -10,25 +10,24 @@ import category_model
 sys.path.append(connect_dir)
 import connectdb
 
-TYPE_NAME = "categories"
 
-def get_data():
-    return connectdb.get_data(TYPE_NAME)
+def get_data(name):
+    return connectdb.get_data(name)
 
 
-def insert(data):
+def insert(name, data):
     item = category_model.Category(**data)
-    item.update_id(connectdb.generate_id(TYPE_NAME))
+    item.update_id(connectdb.generate_id(name))
     # return item.insert()
-    return connectdb.insert_data(TYPE_NAME, item)
+    return connectdb.insert_data(name, item)
 
 
-def update(data):
+def update(name, data):
     item = category_model.Category(**data)
     # return item.update()
-    return connectdb.update_data(TYPE_NAME, item, item.id)
+    return connectdb.update_data(name, item, item.id)
 
 
-def delete(data_id):
+def delete(name, data_id):
     # return item.update()
-    return connectdb.delete_data(TYPE_NAME, data_id)
+    return connectdb.delete_data(name, data_id)

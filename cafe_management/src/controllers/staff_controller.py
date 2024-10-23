@@ -10,23 +10,21 @@ import staff_model
 sys.path.append(connect_dir)
 import connectdb
 
-TYPE_NAME = "staffs"
+
+def get_data(name):
+    return connectdb.get_data(name)
 
 
-def get_data():
-    return connectdb.get_data(TYPE_NAME)
-
-
-def insert(data):
+def insert(name, data):
     item = staff_model.Staff(**data)
-    item.update_id(connectdb.generate_id(TYPE_NAME))
-    return connectdb.insert_data(TYPE_NAME, item)
+    item.update_id(connectdb.generate_id(name))
+    return connectdb.insert_data(name, item)
 
 
-def update(data):
+def update(name, data):
     item = staff_model.Staff(**data)
-    return connectdb.update_data(TYPE_NAME, item, item.id)
+    return connectdb.update_data(name, item, item.id)
 
 
-def delete(data_id):
-    return connectdb.delete_data(TYPE_NAME, data_id)
+def delete(name, data_id):
+    return connectdb.delete_data(name, data_id)

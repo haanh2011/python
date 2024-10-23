@@ -11,54 +11,57 @@ import order_model
 sys.path.append(connect_dir)
 import connectdb
 
-TYPE_NAME = "orders"
-TYPE_NAME_DETAIL = "order_details"
 
-
-def generate_id():
-    new_id = connectdb.generate_id(TYPE_NAME)
+def generate_id(name):
+    new_id = connectdb.generate_id(name)
     return new_id
 
 
-def get_data():
-    return connectdb.get_data(TYPE_NAME)
+def get_data(name):
+    return connectdb.get_data(name)
 
-def get_data_detail(order_id):
-    return connectdb.get_data_by_value(TYPE_NAME_DETAIL, "order_id", order_id)
 
-def insert(data):
-    print("data order", data)
+def get_data_details(name, order_id):
+    return connectdb.get_data_by_value(name, "order_id", order_id)
 
-    # Step 1: Extract data_init
+
+def insert(name,data):
     products_info = data.pop("products_info")
-    print("products_info",products_info)
 
     item = order_model.Order(**data)
-    item.update_id(connectdb.generate_id(TYPE_NAME))
-    connectdb.insert_data(TYPE_NAME, item)
+    item.update_id(connectdb.generate_id(name))
+    connectdb.insert_data(name, item)
     for product in products_info:
-        product["id"] = connectdb.generate_id(TYPE_NAME_DETAIL)
+        product["id"] = connectdb.generate_id("order_details")
         product["order_id"] = item.id
-        insert_details(product)
+        insert_details("order_details",product)
 
-def insert_details(data):
-    print("data",data)
+
+def insert_details(name, data):
+    print("data", data)
     item = order_model.OrderDetail(**data)
-    return connectdb.insert_data(TYPE_NAME_DETAIL, item)
+    return connectdb.insert_data(name, item)
 
 
-def update(data):
+def update(name, data):
+    products_info = data.pop("products_info")
+
     item = order_model.Order(**data)
-    return connectdb.update_data(TYPE_NAME, item, item.id)
+    connectdb.update_data(name, item, item.id)
+    for product in products_info:
+        product["id"] = connectdb.generate_id("order_details")
+        product["order_id"] = item.id
+        update_details("order_details",product)
 
 
-def update_details(data):
+def update_details(name, data):
     item = order_model.OrderDetail(**data)
-    return connectdb.update_data(TYPE_NAME_DETAIL, item, item.id)
+    return connectdb.update_data(f"{name}_details", item, item.id)
 
 
-def delete(data_id):
-    return connectdb.delete_data(TYPE_NAME, data_id)
+def delete(name, data_id):
+    return connectdb.delete_data(name, data_id)
 
-def delete_details(data_id):
-    return connectdb.delete_data(TYPE_NAME_DETAIL, data_id)
+
+def delete_details(name, data_id):
+    return connectdb.delete_data(f"{name}_details", data_id)

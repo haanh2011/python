@@ -8,6 +8,7 @@ sys.path.append(controllers_dir)
 import window
 import invoice_controller, order_view
 
+name = "invoices"
 display_name = "Hóa Đơn"
 columns = {
     "widget_type": ["Entry", "Combobox", "Date"],
@@ -17,21 +18,23 @@ columns = {
     "validates": ["string", "string", "datetime"]
 }
 
+
 def set_data_init():
     orders = order_view.get_all_data()
     columns["data_init"]["order_id"]["combobox_values"] = [(f"{item[0]} - {item[1]}") for item in orders]
 
+
 def get_all_data():
-    return invoice_controller.get_data()
+    return invoice_controller.get_data(name)
 
 
 def create_frame(frame_parent):
     rows = get_all_data()
     set_data_init()
-    frame = window.create_frame_actions_treeview(invoice_controller, frame_parent, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(invoice_controller, frame_parent, name, display_name, columns, rows)
     return frame
 
 
 def create_button_menu(dashboard_frame, frame, buttons, frames):
-    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames)
+    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames, set_data_init)
     return btn

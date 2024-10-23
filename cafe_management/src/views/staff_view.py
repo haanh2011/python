@@ -7,15 +7,16 @@ sys.path.append(controllers_dir)
 import window
 import staff_controller
 
+name = "staffs"
 display_name = "Nhân Viên"
-
 columns = {
     "widget_type": ["Entry", "Entry", "Entry", "Entry", "Entry", "Entry"],
     "columns_name_display": ["Mã", "Tên", "Username", "Password", "Điện thoại", "Địa chỉ"],
-    "columns_name": ["id","name","username","password","phone","address"],
-    "data_init": {"id":"","name":"","username":"","password":"","phone":"","address":""},
+    "columns_name": ["id", "name", "username", "password", "phone", "address"],
+    "data_init": {"id": "", "name": "", "username": "", "password": "", "phone": "", "address": ""},
     "validates": ["string", "string", "string", "password", "string", "string"]
 }
+
 
 def set_data_init():
     print("set data init")
@@ -24,12 +25,12 @@ def set_data_init():
 
 
 def get_all_data():
-    return staff_controller.get_data()
+    return staff_controller.get_data(name)
 
 
 def create_frame(frame_parent):
     rows = get_all_data()
-    frame = window.create_frame_actions_treeview(staff_controller, frame_parent, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(staff_controller, frame_parent, name, display_name, columns, rows)
     return frame
 
 

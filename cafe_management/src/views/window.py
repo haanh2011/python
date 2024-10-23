@@ -1,8 +1,14 @@
 import sys, os
 import tkinter as tk
 from tkinter import ttk, messagebox
+from types import NoneType
 
-from src.views import styles
+from PIL.ImageOps import expand
+from numpy.ma.core import filled
+from pandas.io.formats.info import frame_examples_sub
+
+from src.views import styles, order_view
+from src.views.product_view import display_name
 from styles import *
 from src.helper.clock_frame import *
 
@@ -48,7 +54,7 @@ def create_frame(frame_parent, name, **kwargs):
     return tk.Frame(frame_parent, name=name, **kwargs)
 
 
-def create_dialog(frame_parent, title, width, height):
+def create_dialog(frame_parent, title):
     """
     Tạo một dialog và căn giữa nó trên màn hình.
 
@@ -136,12 +142,12 @@ def create_tree_view(frame_treeview, dict_cols, rows):
     return tr
 
 
-def create_actions(frame_action, type_name, show_details_item, add_item, update_item, delete_item):
+def create_actions(frame_action, name, show_details_item, add_item, update_item, delete_item):
     # Tạo nút 'Add' và đặt nó ở phía trên, bên phải của sub_frame
     add_button = button_image.create_image_button(
         frame_action, "add_btn", "Thêm", "images/add.png",
         command=lambda: add_item(),
-        tooltip_text="Add Item",
+        tooltip_text="Thêm",
         bg="#4CAF50",  # Màu nền tùy chỉnh
         fg="white"  # Màu chữ tùy chỉnh
     )
@@ -153,7 +159,7 @@ def create_actions(frame_action, type_name, show_details_item, add_item, update_
         "Sửa",
         "images/edit.png",
         command=lambda: update_item(),
-        tooltip_text="Update Item",
+        tooltip_text="Sửa",
         bg="#FFC107",  # Màu nền tùy chỉnh
         fg="white",  # Màu chữ tùy chỉnh
         state=tk.DISABLED
@@ -166,29 +172,29 @@ def create_actions(frame_action, type_name, show_details_item, add_item, update_
         "Xoá",
         "images/delete.png",
         command=lambda: delete_item(),
-        tooltip_text="Delete Item",
+        tooltip_text="Xoá",
         bg="#CD5555",  # Màu nền tùy chỉnh
         fg="white",  # Màu chữ tùy chỉnh
         state=tk.DISABLED
     )
     delete_button.grid(row=0, column=2, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
 
-    if type_name == "Orders":
+    widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
+    if name == "orders":
         show_details_button = button_image.create_image_button(
-            frame_action, "add_btn", "Show Order Details", "images/order.png",
+            frame_action, "add_btn", "Chi tiết", "images/order.png",
             command=lambda: show_details_item(),
-            tooltip_text="Show Order Details",
+            tooltip_text="Chi tiết ",
             bg="#3b5998",  # Màu nền tùy chỉnh
             fg="white",  # Màu chữ tùy chỉnh
             state=tk.DISABLED
         )
         show_details_button.grid(row=0, column=3, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-
-    widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
+        widgets["show_details_button"] = show_details_button
     return widgets
 
 
-def create_frame_actions_treeview(controller, frame_parent, display_name, dict_cols, rows):
+def create_frame_actions_treeview(controller, frame_parent, name, display_name, dict_cols, rows):
     """
         Hàm tạo nội dung cho khung (frame) với bảng và các nút hành động.
         :param controller: Bộ điều khiển để lấy dữ liệu và thực hiện các thao tác.
@@ -199,7 +205,7 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
         :return: Trả về đối tượng frame đã tạo.
     """
     # Tạo frame chứa toàn bộ
-    frame_root = tk.Frame(frame_parent, name=f"fr_{display_name}", bg="#f0f0f0")
+    frame_root = tk.Frame(frame_parent, name=f"fr_{name}", bg="#f0f0f0")
     frame_root.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
     # Cấu hình để frame_root mở rộng đầy đủ
@@ -207,7 +213,7 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
     frame_root.grid_columnconfigure(0, weight=1)  # Đảm bảo cột chứa Treeview mở rộng theo chiều ngang
 
     # Tạo frame chứa các actions của grid
-    frame_action = tk.Frame(frame_root, name=f"fr_action_{display_name}")
+    frame_action = tk.Frame(frame_root, name=f"fr_action_{name}")
     frame_action.grid(row=0, column=0, sticky="ne", padx=10, pady=10)
 
     # Cấu hình các cột của frame_action để căn đều các nút
@@ -215,7 +221,7 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
         frame_action.grid_columnconfigure(idx, weight=1)
 
     # Tạo frame phụ chứa Treeview
-    frame_treeview = ttk.Frame(frame_root, name=f"fr_tv_{display_name}")
+    frame_treeview = ttk.Frame(frame_root, name=f"fr_tv_{name}")
     frame_treeview.grid(row=1, column=0, sticky="nsew")  # Đảm bảo nó mở rộng full
 
     # Đảm bảo frame_treeview chiếm toàn bộ không gian còn lại
@@ -234,7 +240,7 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
             tree.delete(item)
 
         # Lấy dữ liệu mới và thêm vào Treeview
-        new_rows = controller.get_data()
+        new_rows = controller.get_data(name)
         for row in new_rows:
             tree.insert('', 'end', iid=row[0], values=row)
 
@@ -243,6 +249,15 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
     def show_details_item():
         # Kiểm tra frame_parent
         print("show_details_item")
+        if frame_parent is None:
+            print("Error: Parent frame is not initialized.")
+            return
+        selected_item = tree.selection()
+        if not selected_item:
+            print("Error: No item selected.")
+            return
+        selected_item_id = selected_item[0]
+        order_view.create_frame_details(frame_parent, selected_item_id)
 
     def add_item():
         print("Add item")
@@ -252,7 +267,7 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
 
         # Hiển thị dialog thêm dữ liệu mới
         add_dialog.show_dialog(controller=controller, frame_parent=frame_parent, dict_cols=dict_cols,
-                               type_name=display_name, on_success=update_tree_view)
+                               name=name, display_name=display_name, on_success=update_tree_view)
 
     def update_item():
         selected_item = tree.selection()
@@ -263,14 +278,15 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
         item_data = tree.item(selected_item_id)
         print("update_item", item_data)
         update_dialog.show_dialog(controller=controller, frame_parent=frame_parent, dict_cols=dict_cols,
-                                  type_name=display_name, data=item_data, on_success=update_tree_view)
+                                  name=name, display_name=display_name, data=item_data, on_success=update_tree_view)
 
     def delete_item():
         selected_item_id = tree.selection()[0]
         print("delete_item", selected_item_id)
-        delete_dialog.show_dialog(controller, frame_parent, selected_item_id, on_success=update_tree_view)
+        delete_dialog.show_dialog(controller=controller, frame_parent=frame_parent, name=name, data_id=selected_item_id,
+                                  on_success=update_tree_view)
 
-    widgets = create_actions(frame_action=frame_action, type_name=display_name, show_details_item=show_details_item,
+    widgets = create_actions(frame_action=frame_action, name=name, show_details_item=show_details_item,
                              add_item=add_item,
                              update_item=update_item,
                              delete_item=delete_item)
@@ -284,6 +300,8 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
             print("No item selected.")
             widgets["update_button"].configure(state=tk.DISABLED)
             widgets["delete_button"].configure(state=tk.DISABLED)
+            if name == "orders":
+                widgets["show_details_button"].configure(state=tk.DISABLED)
             return
 
         selected_item_id = selected_items[0]
@@ -291,6 +309,8 @@ def create_frame_actions_treeview(controller, frame_parent, display_name, dict_c
         # Enable the button if an item is selected
         widgets["update_button"].configure(state=tk.NORMAL if selected_item_id else tk.DISABLED)
         widgets["delete_button"].configure(state=tk.NORMAL if selected_item_id else tk.DISABLED)
+        if name == "orders":
+            widgets["show_details_button"].configure(state=tk.NORMAL if selected_item_id else tk.DISABLED)
 
     # Bind the selection event to the Treeview
     tree.bind('<<TreeviewSelect>>', on_select)
@@ -361,17 +381,23 @@ def show_frame(selected_frame, frames, buttons, selected_button):
     selected_button.config(state="disabled")
 
 
-def create_button_menu(frame_parent, frame_to_show, label, buttons, frames):
+def create_button_menu(frame_parent, frame_to_show, display_name, buttons, frames, func_set_data_init=None):
     """
     Tạo nút menu trong frame cha và gán hành động hiển thị frame tương ứng khi nhấn.
     :param frame_parent: Frame chứa nút menu.
     :param frame_to_show: Frame cần hiển thị khi nhấn nút.
-    :param label: Nhãn của nút.
+    :param display_name: Nhãn của nút.
     :param buttons: Danh sách các nút.
     :param frames: Danh sách các frame.
     :return: Đối tượng nút đã tạo.
     """
-    btn = tk.Button(frame_parent, text=label, command=lambda: show_frame(frame_to_show, frames, buttons, btn),
+
+    def show_frame_and_set_init():
+        if func_set_data_init != None:
+            func_set_data_init()
+        show_frame(frame_to_show, frames, buttons, btn)
+
+    btn = tk.Button(frame_parent, text=display_name, command=lambda: show_frame_and_set_init(),
                     **BTN_MENU)
     btn.pack(fill="x", padx=5, pady=5)
     buttons.append(btn)
@@ -423,6 +449,24 @@ def create_date_entry(parent, format="%Y-%m-%d"):
     return entry
 
 
+# Hàm để lấy dữ liệu từ Treeview và chuyển thành danh sách các dicts
+def get_treeview_data_to_dict(treeview):
+    treeview_data = []
+
+    # Lấy header (columns)
+    columns = treeview["columns"]
+
+    # Lấy tất cả các hàng trong Treeview
+    for row_id in treeview.get_children():
+        row_values = treeview.item(row_id)['values']
+
+        # Kết hợp header với giá trị của hàng
+        row_dict = {columns[i]: row_values[i] for i in range(len(columns))}
+        treeview_data.append(row_dict)
+
+    return treeview_data
+
+
 def get_widget_values(widgets):
     """Retrieves values from various widget types in a dictionary.
 
@@ -442,13 +486,9 @@ def get_widget_values(widgets):
             value = widget.get().split("-")[0].strip()
             print("value Combobox", value)
         elif isinstance(widget, ttk.Treeview):
-
             # Get all items from Treeview
-            value = []
-            for item in widget.get_children():
-                product_data = widget.item(item, 'values')
-                value.append(product_data)
-
+            value = get_treeview_data_to_dict(widget)
+            print(value, "value treeview")
         elif isinstance(widget, tk.Entry):
             value = widget.get()
             print("value Entry", value)
@@ -473,8 +513,12 @@ def set_width_height_top_level(top_level, width, height):
 
 
 # Tạo hàm chứa add list product cho order
-def create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets):
-
+def create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data_id, total_price):
+    print("data_id", data_id)
+    data_details = {}
+    if data_id != "":
+        data_details = order_view.get_all_data_details(data_id)
+    print("data_details", data_details)
     product_label = tk.Label(form_frame, text="Sản phẩm:",
                              font=("Helvetica", 12),
                              foreground="#000000",
@@ -485,8 +529,8 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
     selected_data = tk.StringVar()
     product_combobox = ttk.Combobox(form_frame, textvariable=selected_data, values=product_values, width=35,
                                     state="readonly",
-                                     font=("Helvetica", 12),
-                                     justify='center')
+                                    font=("Helvetica", 12),
+                                    justify='center')
     product_combobox.grid(row=idx + 1, column=1, sticky="ew")
 
     # Entry để nhập số lượng
@@ -501,12 +545,11 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
     def add_product():
         """Handle the Add button press."""
         data_product = product_combobox.get().split("-")
-        product_id = data_product[0].strip()
         product_name = data_product[1].strip()
         product_price = data_product[2].strip()
         quantity = quantity_entry.get().strip()
 
-        if not product_id or not quantity:
+        if not product_name or not quantity:
             messagebox.showwarning("Input Error", "Both product name and quantity are required.")
             return
 
@@ -520,18 +563,17 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
         existing_item = None
         for item in tree.get_children():
             values = tree.item(item, 'values')
-            if values[0] == product_id:  # Compare product ID
+            if values[1] == product_name:  # Compare product ID
                 existing_item = item
                 break
         total = float(entry_total.get()) + float(product_price) * float(quantity)
-        entry_total.delete(0, tk.END)
-        entry_total.insert(tk.END, str(total))
+        update_entry_value(total)
         if existing_item:  # If product ID exists, update the quantity
-            existing_quantity = int(tree.item(existing_item, 'values')[3])  # Get current quantity
+            existing_quantity = int(tree.item(existing_item, 'values')[2])  # Get current quantity
             new_quantity = existing_quantity + quantity  # Calculate new quantity
-            tree.item(existing_item, values=(product_id, product_name, product_price, new_quantity))  # Update the item
+            tree.item(existing_item, values=(product_name, product_price, new_quantity))  # Update the item
         else:  # If product ID does not exist, add a new row
-            tree.insert("", "end", values=(product_id, product_name, product_price, quantity))
+            tree.insert("", "end", values=(product_name, product_price, quantity))
 
         # Clear the input fields
         product_combobox.set('')
@@ -539,11 +581,15 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
 
     def delete_product():
         """Handle the Delete button press."""
-        selected_item = tree.selection()
+        selected_idx= tree.selection()
+        selected_item = tree.item(selected_idx)
         if not selected_item:
             messagebox.showwarning("Selection Error", "Please select a product to delete.")
             return
-        tree.delete(selected_item)
+        tree.delete(selected_idx)
+        total = float(entry_total.get()) - float(selected_item["values"][1]) * float(selected_item["values"][2])
+        update_entry_value(total)
+        print(selected_item,"selected_item")
 
     def on_tree_select(event):
         """Enable or disable the delete button based on selection."""
@@ -553,16 +599,23 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
         else:
             delete_button.config(state="disabled")  # Disable delete button
 
+    # Hàm để cập nhật giá trị của Entry từ code
+    def update_entry_value(new_value):
+        entry_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
+        entry_total_value.set(new_value)  # Cập nhật giá trị của Entry
+        entry_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
+
     # Nút để thêm sản phẩm
     add_button = tk.Button(form_frame, text="Thêm", command=lambda: add_product(), bg="#2196F3", fg="white")
     add_button.grid(row=idx + 3, column=0, sticky="ew")
 
     # Button to delete products
-    delete_button = tk.Button(form_frame, text="Xoá", command=delete_product, state="disabled", bg="#FF9800", fg="white")
+    delete_button = tk.Button(form_frame, text="Xoá", command=delete_product, state="disabled", bg="#FF9800",
+                              fg="white")
     delete_button.grid(row=idx + 3, column=1, sticky="ew")
 
     # Treeview để hiển thị danh sách sản phẩm
-    tree = ttk.Treeview(form_frame, columns=( "product_name", "price", "quantity"), show="headings", name=col_name)
+    tree = ttk.Treeview(form_frame, columns=("product_name", "price", "quantity"), show="headings", name=col_name)
     tree.bind("<<TreeviewSelect>>", on_tree_select)
 
     # Thiết lập tiêu đề cho các cột
@@ -570,21 +623,29 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
     tree.heading("price", text="Giá")
     tree.heading("quantity", text="Số lượng")
 
-
     # Thiết lập cột (anchor để căn lề và width để thiết lập chiều rộng)
     tree.column(column="product_name", anchor="w", width=120)  # Left align Name, adjust width
-    tree.column(column="price", anchor="w", width=70)  # Left align Name, adjust width
-    tree.column(column="quantity", anchor="center", width=100)  # Center align Quantity, adjust width
+    tree.column(column="price", anchor="e", width=70)  # Left align Name, adjust width
+    tree.column(column="quantity", anchor="e", width=100)  # Center align Quantity, adjust width
 
     tree.grid(row=idx + 4, column=0, columnspan=2, sticky="ew")
-
+    if data_details:
+        for detail in data_details:
+            tree.insert('', 'end', iid=detail[0], values=(detail[2], detail[3], detail[4]))
     total_label = tk.Label(form_frame, text="Tổng tiền:",
-                             font=("Helvetica", 12),
-                             foreground="#000000",
-                             padx=10, pady=10)
+                           font=("Helvetica", 12),
+                           foreground="#000000",
+                           padx=10, pady=10)
     total_label.grid(row=idx + 5, column=0, sticky="ew")
-    entry_total = tk.Entry(form_frame, width=35, name="total_price")
-    entry_total.insert(tk.END, "0")
+
+    # Tạo StringVar để lưu giá trị của Entry
+    entry_total_value = tk.StringVar()
+    entry_total = tk.Entry(form_frame, textvariable=entry_total_value, width=35, name="total_price", state="readonly")
+
+    if total_price and total_price != "" and float(total_price) > 0:
+        update_entry_value(total_price)
+    else:
+        update_entry_value(0)
     entry_total.grid(row=idx + 5, column=1, sticky="ew")
 
     widgets[col_name] = tree
@@ -592,17 +653,49 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
 
 
 # Tạo frame chứa các phần tử của dialog add, update
-def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_cols, type_name,
-                           on_success, data=[],
-                           is_add=True):
-
+def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_cols, name, display_name,
+                           on_success, data=[], is_add=True):
     # Tạo frame chứa các phần tử của form
     form_frame = ttk.Frame(dialog_frame)
     form_frame.pack(padx=10, pady=10, fill="both", expand=True)
+    # Tạo style cho buttons
+    styles.create_button_style()
+    create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_frame,
+                             name, display_name, on_success, data)
 
+    # Cập nhật lại kích thước của dialog
+    dialog_frame.update_idletasks()  # Cập nhật để có kích thước chính xác sau khi thêm phần tử
+
+    # Cài đặt cấu hình để cho phép tự mở rộng chiều cao theo nội dung
+    dialog_frame.geometry(f"{dialog_frame.winfo_reqwidth()}x{dialog_frame.winfo_reqheight()}")
+    set_centered_geometry(parent_frame, dialog_frame)
+
+    return form_frame
+
+
+def create_btn_save_cancel(form_frame, dict_cols, num_widget_add, on_save, on_cancel):
+    # Tạo nút "Save" và "Cancel"
+    for i, (text, command) in enumerate([
+        ("Save", lambda: on_save()),
+        ("Cancel", lambda: on_cancel())
+    ]):
+        btn = ttk.Button(form_frame, text=text, command=command, style=f"{text}.TButton")
+        btn.grid(row=len(dict_cols["columns_name"]) + num_widget_add + 1, column=i, pady=4, sticky="ew")
+
+
+# Hàm để kiểm tra và đặt giá trị mặc định dựa trên id
+def set_combobox_selected_by_id_prefix(data, id_prefix):
+    for idx, (item) in enumerate(data):
+        if item.startswith(id_prefix):  # Kiểm tra chuỗi bắt đầu bằng id_prefix
+            return item
+    print(f"Không tìm thấy mục bắt đầu với {id_prefix}")
+
+
+def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_frame,
+                             name, display_name, on_success, data):
     widgets = {}  # Dictionary to hold label-entry pairs
 
-    num_widget_add = 0 # Tạo các trường nhập liệu dựa trên fields
+    num_widget_add = 0  # Tạo các trường nhập liệu dựa trên fields
 
     for idx, (col_name) in enumerate(dict_cols["columns_name"]):
         index = num_widget_add + idx
@@ -610,9 +703,13 @@ def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_c
         match str(dict_cols["widget_type"][idx]):
             case "Combobox":
                 values = dict_cols["data_init"][col_name]["combobox_values"]
-                selected_data = tk.StringVar()
-                combobox = ttk.Combobox(form_frame, textvariable=selected_data, values=values, width=35, name=col_name,
+                combobox = ttk.Combobox(form_frame, values=values, width=35, name=col_name,
                                         state="readonly")
+                if not is_add:
+                    dt = set_combobox_selected_by_id_prefix(values, data["values"][idx])
+                    # selected_data.set(value)
+                    combobox.set(dt)
+                    # combobox.current(default_idx)
                 widgets[col_name] = combobox
             case "Entry":
                 # Tạo Entry với padding để tăng chiều cao
@@ -624,10 +721,17 @@ def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_c
                 widgets[col_name] = entry
             case "Text":
                 text = tk.Text(form_frame, width=35, height=6, name=col_name)
+                if not is_add:
+                    text.insert('1.0', data["values"][idx])
                 widgets[col_name] = text
             case "Product_list":
                 product_values = dict_cols["data_init"][col_name]["combobox_values"]
-                create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets)
+                print("data[values]", data["values"])
+                if not is_add:
+                    create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data["values"][0],
+                                                  data["values"][3])
+                else:
+                    create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, "", 0)
                 num_widget_add = 5
             # các loại widget khác nếu có
 
@@ -639,39 +743,44 @@ def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_c
             label.grid(row=index, column=0, sticky="w")
             widgets[col_name].grid(row=index, column=1, sticky="ew")
 
-    # Tạo style cho buttons
-    styles.create_button_style()
-
-    # Tạo nút "Save" và "Cancel"
-    for i, (text, command) in enumerate([
-        ("Save", lambda: on_save()),
-        ("Cancel", lambda: on_cancel())
-    ]):
-        btn = ttk.Button(form_frame, text=text, command=command, style=f"{text}.TButton")
-        btn.grid(row=len(dict_cols["columns_name"]) + num_widget_add + 1, column=i, pady=4, sticky="ew")
-
-    # Cập nhật lại kích thước của dialog
-    dialog_frame.update_idletasks()  # Cập nhật để có kích thước chính xác sau khi thêm phần tử
-
-    # Cài đặt cấu hình để cho phép tự mở rộng chiều cao theo nội dung
-    dialog_frame.geometry(f"{dialog_frame.winfo_reqwidth()}x{dialog_frame.winfo_reqheight()}")
-    set_centered_geometry(parent_frame, dialog_frame)
-
     def on_save():
         """
         Lưu dữ liệu khi nhấn nút "Save".
         """
         data = get_widget_values(widgets)
         if is_add:
-            controller.insert(data)  # Thêm dữ liệu vào cơ sở dữ liệu
+            controller.insert(name, data)  # Thêm dữ liệu vào cơ sở dữ liệu
         else:
-            controller.update(data)  # Update dữ liệu vào cơ sở dữ liệu
+            controller.update(name, data)  # Update dữ liệu vào cơ sở dữ liệu
         dialog_frame.destroy()  # Đóng dialog
-        messagebox.showinfo("Success", f"{type_name} added successfully!")  # Thông báo thành công
+        messagebox.showinfo("Success", f"{display_name} added successfully!")  # Thông báo thành công
         if on_success:
             on_success()  # Cập nhật Treeview
 
     def on_cancel():
         dialog_frame.destroy()
 
-    return form_frame
+    # Tạo nút "Save" và "Cancel"
+    create_btn_save_cancel(form_frame, dict_cols, num_widget_add, on_save, on_cancel)
+    return widgets
+
+
+def create_frame_treeview_details(controller, frame_parent, name, display_name, dict_cols, rows):
+    """
+        Hàm tạo nội dung cho khung (frame) với bảng và các nút hành động.
+        :param controller: Bộ điều khiển để lấy dữ liệu và thực hiện các thao tác.
+        :param frame_parent: Frame gốc để đặt khung mới vào.
+        :param display_name: Tên của khung nội dung (vd: 'category', 'product', ...).
+        :param dict_cols: Từ điển các cột của bảng (vd: {"columns_name_display": ["Mã", "Tên loại sản phẩm"], ...}).
+        :param rows: Dữ liệu ban đầu cho Treeview.
+        :return: Trả về đối tượng frame đã tạo.
+    """
+    # Tạo frame chứa toàn bộ
+    frame_root = tk.Toplevel(frame_parent, name=f"fr_{name}", bg="#f0f0f0")
+
+    # Tạo frame phụ chứa Treeview
+    frame_treeview = ttk.Frame(frame_root, name=f"fr_tv_details_{name}")
+    frame_treeview.pack(fill=tk.BOTH, expand=True)  # Đảm bảo nó mở rộng full
+
+    # Tạo treeview
+    tree = create_tree_view(frame_treeview, dict_cols, rows)

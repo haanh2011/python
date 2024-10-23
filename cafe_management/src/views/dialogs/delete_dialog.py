@@ -10,11 +10,13 @@ sys.path.append(views_dir)
 import styles
 import window
 
-def show_dialog(controller, frame_parent, data_id, on_success=None):
 
+def show_dialog(controller, frame_parent, name, data_id, on_success=None):
+    # Tạo style cho buttons
+    styles.create_button_style()
     # Thiết lập kích thước dialog
     width, height = 450, 110
-    dialog_delete = window.create_dialog(frame_parent, "Delete Data Form", width, height)
+    dialog_delete = window.create_dialog(frame_parent, "Delete Data Form")
 
     # Tạo frame để chứa các phần tử của form
     form_frame = ttk.Frame(dialog_delete, padding=(20, 10))
@@ -30,9 +32,10 @@ def show_dialog(controller, frame_parent, data_id, on_success=None):
 
     btn_cancel = ttk.Button(form_frame, text="Cancel", command=dialog_delete.destroy, style="Cancel.TButton")
     btn_cancel.grid(row=1, column=1, sticky="ew", pady=10)
+    window.set_centered_geometry(frame_parent, dialog_delete)
 
     def on_save():
-        controller.delete(data_id)  # Gọi controller để xóa dữ liệu
+        controller.delete(name, data_id)  # Gọi controller để xóa dữ liệu
         dialog_delete.destroy()  # Đóng dialog
         messagebox.showinfo("Success", "Xoá dữ liệu thành công!")  # Thông báo thành công
 

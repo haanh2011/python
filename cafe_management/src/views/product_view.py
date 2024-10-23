@@ -8,8 +8,8 @@ import window
 import product_controller
 import category_view
 
+name = "products"
 display_name = "Sản Phẩm"
-
 columns = {
     "widget_type": ["Entry", "Combobox", "Entry", "Entry", "Text"],
     "columns_name_display": ["Mã", "Loại sản phẩm", "Tên sản phẩm", "Giá tiền", "Mô tả"],
@@ -26,14 +26,16 @@ def set_data_init():
 
 
 def get_all_data():
-    return product_controller.get_data()
+    return product_controller.get_data(name)
+
 
 def create_frame(frame_parent):
-    rows = product_controller.get_data()
+    rows = product_controller.get_data(name)
     set_data_init()
-    frame = window.create_frame_actions_treeview(product_controller, frame_parent, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(product_controller, frame_parent, name, display_name, columns, rows)
     return frame
 
+
 def create_button_menu(dashboard_frame, frame, buttons, frames):
-    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames)
+    btn = window.create_button_menu(dashboard_frame, frame, display_name, buttons, frames, set_data_init)
     return btn
