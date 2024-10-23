@@ -11,13 +11,12 @@ display_name = "Orders"
 display_name_detail = "Order Details"
 
 column_orders = {
-    "widget_type": ["Entry", "Combobox", "Product_list", "Date", "Entry"],
-    "columns_name_display": ["Mã", "Khách hàng", "Sản phẩm", "Ngày tạo", "Tổng tiền"],
-    "columns_name": ["id", "customer_id", "products_info", "order_date", "total_price"],
+    "widget_type": ["Entry", "Combobox", "Product_list"],
+    "columns_name_display": ["Mã", "Khách hàng", "Ngày tạo"],
+    "columns_name": ["id", "customer_id", "products_info"],
     "data_init": {"id": "", "customer_id": {"value_default": "", "combobox_value": []},
-                  "products_info": {"value_default": "", "combobox_value": []}, "order_date": "",
-                  "total_price": ""},
-    "validates": ["string", "string", "list", "datetime", "decimal"]
+                  "products_info": {"value_default": "", "combobox_value": []}},
+    "validates": ["string", "string", "list"]
 }
 
 column_order_details = {

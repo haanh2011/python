@@ -17,6 +17,8 @@ class Customer(Person):
 
     def update_id(self, id):
         self.id = id
+    def update_point(self, point):
+        self.point = point
     def getinfo(self):
         super().getinfo()
         print("Mã khách hàng: ", self.id)

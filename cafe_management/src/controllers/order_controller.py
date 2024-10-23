@@ -28,14 +28,22 @@ def get_data_detail(order_id):
 
 def insert(data):
     print("data order", data)
-    # item = order_model.Order(**data)
-    # item.update_id(connectdb.generate_id(TYPE_NAME))
-    # return connectdb.insert_data(TYPE_NAME, item)
 
+    # Step 1: Extract data_init
+    products_info = data.pop("products_info")
+    print("products_info",products_info)
+
+    item = order_model.Order(**data)
+    item.update_id(connectdb.generate_id(TYPE_NAME))
+    connectdb.insert_data(TYPE_NAME, item)
+    for product in products_info:
+        product["id"] = connectdb.generate_id(TYPE_NAME_DETAIL)
+        product["order_id"] = item.id
+        insert_details(product)
 
 def insert_details(data):
+    print("data",data)
     item = order_model.OrderDetail(**data)
-    item.update_id(connectdb.generate_id(TYPE_NAME_DETAIL))
     return connectdb.insert_data(TYPE_NAME_DETAIL, item)
 
 

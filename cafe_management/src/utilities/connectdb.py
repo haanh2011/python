@@ -341,7 +341,7 @@ def insert_data(table_name, data):
 
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
-
+        print("values", sql% values)
         #Thực hiện câu lệnh INSERT với các giá trị dữ liệu
         cursor.execute(sql, values)
 
