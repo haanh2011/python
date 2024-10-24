@@ -426,12 +426,16 @@ def insert_user_admin(data):
         db.close()
 
 
-def update_point_of_customer(customer_id, point_to_add):
+def update_point_of_customer(customer_id, point_to_add, is_add = True):
     db = connect_db()
     cursor = db.cursor()
     try:
-        cursor.execute(
-            f"UPDATE {DB_NAME}.customers SET point = point + {point_to_add} WHERE id = '{customer_id}'")
+        if is_add:
+            cursor.execute(
+                f"UPDATE {DB_NAME}.customers SET point = point + {point_to_add} WHERE id = '{customer_id}'")
+        else:
+            cursor.execute(
+                f"UPDATE {DB_NAME}.customers SET point = point - {point_to_add} WHERE id = '{customer_id}'")
 
         # Commit thay đổi vào cơ sở dữ liệu
         db.commit()

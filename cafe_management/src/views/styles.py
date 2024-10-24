@@ -23,8 +23,8 @@ BUTTON_FOREGROUND_COLOR = "#FFFFFF"  # White
 FOREGROUND_COLOR = "#FFFFFF"  # White
 
 BACKGROUND_COLOR = "#CD6600"
-BACKGROUND_TREEVIEW="#FFFFE0"
-BACKGROUND_DIALOG="#FFFFE0"
+BACKGROUND_TREEVIEW = "#FFFFE0"
+BACKGROUND_DIALOG = "#FFFFE0"
 
 DISABLED_FOREGROUND = "#1C1C1C"
 TEXT_COLOR_BLACK = "#000000"  # Black
@@ -34,7 +34,6 @@ FONT_HEADING = ("Arial", 12, "bold")  # Kiểu chữ cho tiêu đề
 TEXT_COLOR_GREY = "#333333"  # Màu chữ ô dữ liệu
 TEXT_COLOR_WHITE = "#FFFFFF"
 FONT_SELECTED = ("Arial", 10, "bold")  # Kiểu chữ cho ô khi chọn
-
 
 BTN_MENU = {
     "font": get_button_menu_font(),
@@ -120,6 +119,7 @@ BTN_DELETE = {
     "highlightthickness": 0
 }
 
+
 def configure_treeview_style():
     style = ttk.Style()
 
@@ -197,6 +197,7 @@ def dialog():
     # Cấu hình style cho Toplevel (Dialog)
     style.configure("TFrame", background="#f0f0f0")  # Màu nền sáng cho dialog
 
+
 def create_button_style():
     style = ttk.Style()
 
@@ -212,4 +213,39 @@ def create_button_style():
                     background="#f44336", foreground="white")
     style.map("Cancel.TButton",
               background=[('active', '#e53935')],
+              relief=[('pressed', 'sunken'), ('!pressed', 'raised')])
+
+# Hàm cấu hình style login
+def configure_style_login():
+    style = ttk.Style()
+
+    # Cấu hình style cho Label
+    style.configure("TLabel",
+                    font=("Helvetica", 12),
+                    foreground="#1a1a1a",
+                    background="#f0f0f0",  # Màu nền
+                    padding=[10, 5])
+
+    # Cấu hình style cho Entry
+    style.configure("TEntry",
+                    font=("Helvetica", 12),
+                    padding=[10, 5],
+                    relief="flat",
+                    foreground="#1a1a1a",
+                    background="#ffffff")
+    style.map("TEntry",
+              background=[('focus', '#e0f7fa'),
+                          ('!focus', '#ffffff')],
+              foreground=[('focus', '#1a1a1a'),
+                          ('!focus', '#333333')])
+
+    # Cấu hình style cho Button
+    style.configure("TButton",
+                    font=("Helvetica", 12, "bold"),
+                    padding=5,
+                    relief="raised",
+                    background="#4CAF50",  # Màu xanh lá
+                    foreground="white")
+    style.map("TButton",
+              background=[('active', '#388E3C')],
               relief=[('pressed', 'sunken'), ('!pressed', 'raised')])

@@ -27,6 +27,8 @@ def get_data_details(name, order_id):
 
 def insert(name, data):
     products_info = data.pop("products_info")
+    minus_points = data.pop("point_minus")
+    total = data.pop("total")
     item = order_model.Order(**data)
     item.update_id(connectdb.generate_id(name))
     connectdb.insert_data(name, item)
@@ -35,7 +37,8 @@ def insert(name, data):
         product["order_id"] = item.id
         insert_details("order_details", product)
     mess = connectdb.update_point_of_customer(item.customer_id, int(float(item.total_price) / 1000.0))
-
+    mess = connectdb.update_point_of_customer(item.customer_id, int(minus_points), False)
+    return mess
 
 def insert_details(name, data):
     print("data", data)
@@ -45,7 +48,8 @@ def insert_details(name, data):
 
 def update(name, data):
     products_info = data.pop("products_info")
-
+    minus_points = data.pop("point_minus")
+    total = data.pop("total")
     item = order_model.Order(**data)
     connectdb.update_data(name, item, item.id)
     for product in products_info:
@@ -56,7 +60,7 @@ def update(name, data):
 
 def update_details(name, data):
     item = order_model.OrderDetail(**data)
-    return connectdb.update_data(f"{name}_details", item, item.id)
+    return connectdb.update_data(name, item, item.id)
 
 
 def delete(name, data_id):
@@ -64,4 +68,4 @@ def delete(name, data_id):
 
 
 def delete_details(name, data_id):
-    return connectdb.delete_data(f"{name}_details", data_id)
+    return connectdb.delete_data(name, data_id)

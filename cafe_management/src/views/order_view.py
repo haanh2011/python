@@ -40,7 +40,7 @@ def get_all_data_details(order_id):
 
 def set_data_init():
     customers = customer_view.get_all_data()
-    column_orders["data_init"]["customer_id"]["combobox_values"] = [(f"{item[0]} - {item[1]}") for item in customers]
+    column_orders["data_init"]["customer_id"]["combobox_values"] = [(f"{item[0]} - {item[1]} - {item[4]}") for item in customers]
     products = product_view.get_all_data()
     column_orders["data_init"]["products_info"]["combobox_values"] = [(f"{item[0]} - {item[2]} - {item[3]}") for item in
                                                                       products]

@@ -24,14 +24,6 @@ def create_root_window(width, height):
 def frame_main(frame_root, staff_id):
     window.create_header(frame_root)
 
-    # Register the validation function with tkinter
-
-    # Register validation functions
-    validate_integer_cmd = frame_root.register(validate.validate_integer_input)
-    validate_float_cmd = frame_root.register(validate.validate_float_input)
-    validate_length_cmd = frame_root.register(validate.validate_length_input)
-
-
     # Create frame for the left menu
     dashboard_frame = window.create_frame(frame_root, "dashboard_frame", bg="")
     dashboard_frame.pack(side="left", fill="y", padx=(10, 10))

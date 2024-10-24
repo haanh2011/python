@@ -38,13 +38,9 @@ def set_position_window(root, width, height):
 
 def create_root_window(title, width, height):
     root = tk.Tk()
-    set_position_window(root, width, height)
     root.title(title)
-    # Đặt icon bằng hình ảnh
-    img = Image.open("images/logo.png")  # Thay đổi đường dẫn đến file hình ảnh của bạn
-    icon = ImageTk.PhotoImage(img)
-    root.iconphoto(False, icon)
-
+    set_position_window(root, width, height)
+    root.iconbitmap("images/logo.ico")
     return root
 
 
@@ -315,7 +311,8 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
         item_data = tree.item(selected_item_id)
         print("update_item", item_data)
         update_dialog.show_dialog(controller=controller, frame_parent=frame_parent, dict_cols=dict_cols,
-                                  name=name, display_name=display_name, data=item_data, staff_id=staff_id,on_success=update_tree_view)
+                                  name=name, display_name=display_name, data=item_data, staff_id=staff_id,
+                                  on_success=update_tree_view)
 
     def delete_item():
         selected_item_id = tree.selection()[0]
@@ -336,7 +333,8 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
         if not selected_items:
             print("No item selected.")
             widgets["update_button"].configure(state=tk.DISABLED)
-            widgets["delete_button"].configure(state=tk.DISABLED)
+            if staff_id =="admin":
+                widgets["delete_button"].configure(state=tk.DISABLED)
             if name == "orders":
                 widgets["show_details_button"].configure(state=tk.DISABLED)
             return
@@ -565,29 +563,32 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
     def add_product():
         """Handle the Add button press."""
         data_product = product_combobox.get().split("-")
+        print(data_product, "data_product")
         product_name = data_product[1].strip()
         product_price = data_product[2].strip()
+        max_point = widgets["customer_id"].get().split("-")[2]
         quantity = quantity_entry.get().strip()
-
         if not product_name or not quantity:
-            messagebox.showwarning("Input Error", "Both product name and quantity are required.")
+            messagebox.showwarning("Input Error", "Tên sản phẩm và số lượng cần phải nhập.")
             return
 
         try:
             quantity = int(quantity)
         except ValueError:
-            messagebox.showwarning("Input Error", "Quantity must be a number.")
+            messagebox.showwarning("Input Error", "Số lượng phải là một số nguyên.")
             return
 
         # Check if the product ID already exists in the Treeview
         existing_item = None
         for item in tree.get_children():
             values = tree.item(item, 'values')
-            if values[1] == product_name:  # Compare product ID
+            print("values", values)
+            if values[0] == product_name:  # Compare product ID
                 existing_item = item
                 break
-        total = float(entry_total.get()) + float(product_price) * float(quantity)
-        update_entry_value(total)
+        print("product_price", product_price)
+        total = float(entry_sub_total.get()) + float(product_price) * float(quantity)
+        update_entry_value_with_price(total)
         if existing_item:  # If product ID exists, update the quantity
             existing_quantity = int(tree.item(existing_item, 'values')[2])  # Get current quantity
             new_quantity = existing_quantity + quantity  # Calculate new quantity
@@ -607,8 +608,8 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
             messagebox.showwarning("Selection Error", "Please select a product to delete.")
             return
         tree.delete(selected_idx)
-        total = float(entry_total.get()) - float(selected_item["values"][1]) * float(selected_item["values"][2])
-        update_entry_value(total)
+        total = float(entry_sub_total.get()) - float(selected_item["values"][1]) * float(selected_item["values"][2])
+        update_entry_value_with_price(total)
         print(selected_item, "selected_item")
 
     def on_tree_select(event):
@@ -620,10 +621,29 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
             delete_button.config(state="disabled")  # Disable delete button
 
     # Hàm để cập nhật giá trị của Entry từ code
-    def update_entry_value(new_value):
-        entry_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
-        entry_total_value.set(new_value)  # Cập nhật giá trị của Entry
-        entry_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
+    def update_entry_value_with_price(new_value):
+        entry_sub_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
+        entry_sub_total_value.set(new_value)  # Cập nhật giá trị của Entry
+        entry_sub_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
+        point_minus = entry_point_minus.get()
+        if point_minus and point_minus != "" and point_minus != "-":
+            entry_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
+            entry_total_value.set(float(new_value) - int(point_minus) * 1000)  # Cập nhật giá trị của Entry
+            entry_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
+        else:
+            entry_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
+            entry_total_value.set(new_value)  # Cập nhật giá trị của Entry
+            entry_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
+
+    def update_entry_value_with_point(var):
+        point_minus = var.get()
+        total = entry_sub_total.get()
+        print("total",total)
+        print("point_minus",point_minus)
+        if total and total != "" and point_minus and point_minus != "":
+            entry_total.config(state="normal")  # Chuyển state về 'normal' để có thể thay đổi
+            entry_total_value.set(str(float(total) - float(point_minus) * 1000))  # Cập nhật giá trị của Entry
+            entry_total.config(state="readonly")  # Đặt lại state về 'readonly' để khóa
 
     # Nút để thêm sản phẩm
     add_button = tk.Button(form_frame, text="Thêm", command=lambda: add_product(), bg="#2196F3", fg="white")
@@ -659,17 +679,47 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
     total_label.grid(row=idx + 5, column=0, sticky="ew")
 
     # Tạo StringVar để lưu giá trị của Entry
+    entry_sub_total_value = tk.StringVar()
+    entry_sub_total = tk.Entry(form_frame, textvariable=entry_sub_total_value, width=35, name="total", state="readonly")
+
+    point_minus_label = tk.Label(form_frame, text="Điểm sử dụng:",
+                                 font=("Helvetica", 12),
+                                 foreground="#000000",
+                                 padx=10, pady=10)
+    point_minus_label.grid(row=idx + 6, column=0, sticky="ew")
+    entry_point_minus_value = tk.StringVar()
+
+    # Tạo StringVar để lưu giá trị của Entry
+    entry_point_minus_value = tk.StringVar()
+
+    entry_point_minus_value.trace("w", lambda name, index, mode, var=entry_point_minus_value: update_entry_value_with_point(var))
+    # entry_point_minus_value.trace_add("write", update_entry_value_with_point)  # Trace changes in entry_var
+
+    entry_point_minus = tk.Entry(form_frame, textvariable=entry_point_minus_value, width=35, name="point_minus")
+    entry_point_minus.insert(tk.END, 0)
+
+    entry_total__label = tk.Label(form_frame, text="Tiền thanh toán:",
+                                  font=("Helvetica", 12),
+                                  foreground="#000000",
+                                  padx=10, pady=10)
+    entry_total__label.grid(row=idx + 7, column=0, sticky="ew")
+
+    # Tạo StringVar để lưu giá trị của Entry
     entry_total_value = tk.StringVar()
     entry_total = tk.Entry(form_frame, textvariable=entry_total_value, width=35, name="total_price", state="readonly")
-
     if total_price and total_price != "" and float(total_price) > 0:
-        update_entry_value(total_price)
+        update_entry_value_with_price(total_price)
     else:
-        update_entry_value(0)
-    entry_total.grid(row=idx + 5, column=1, sticky="ew")
+        update_entry_value_with_price(0)
+
+    entry_sub_total.grid(row=idx + 5, column=1, sticky="ew")
+    entry_point_minus.grid(row=idx + 6, column=1, sticky="ew")
+    entry_total.grid(row=idx + 7, column=1, sticky="ew")
 
     widgets[col_name] = tree
+    widgets["total"] = entry_sub_total
     widgets["total_price"] = entry_total
+    widgets["point_minus"] = entry_point_minus
 
 
 # Tạo frame chứa các phần tử của dialog add, update
@@ -742,7 +792,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 if dict_cols["validates"][idx] == "password":
                     entry.config(show='*')
                 if dict_cols["validates"][idx] == "int":
-                    entry.config(validate="key", validatecommand=(validate_integer_cmd, "%P"))
+                    entry.config(validate="key", validatecommand=(validate_integer_cmd, '%P'))
                 if dict_cols["validates"][idx] == "float":
                     entry.config(validate="key", validatecommand=(validate_float_cmd, "%P"))
                 if dict_cols["validates"][idx] == "phone":
@@ -768,7 +818,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 else:
                     create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, "",
                                                   0, validate_integer_cmd)
-                num_widget_add = 5
+                num_widget_add = 7
             # các loại widget khác nếu có
 
         # Trường hợp add thì không hiển thị item ID do id được generate tự động khi add
@@ -831,8 +881,8 @@ def create_frame_treeview_details(controller, frame_parent, name, display_name, 
 # Function to create the dashboard frame
 def create_frame_dashboard(frame_parent, orders_data, customers_data, products_data, staffs_data):
     # Create dashboard frame
-    frame_dashboard = tk.Frame(frame_parent,name=f"fr_dashboard", padx=20, pady=10, bg="#f0f0f0")
-    frame_dashboard.pack(side=tk.TOP,fill="both", expand=True)
+    frame_dashboard = tk.Frame(frame_parent, name=f"fr_dashboard", padx=20, pady=10, bg="#f0f0f0")
+    frame_dashboard.pack(side=tk.TOP, fill="both", expand=True)
 
     # Configure column to center content
     frame_dashboard.columnconfigure(0, weight=1)

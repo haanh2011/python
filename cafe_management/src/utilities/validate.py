@@ -1,9 +1,32 @@
 import re
 
 
-def validate_integer_input(new_value):
-    # Allow empty input, or a string that represents a valid integer
-    return new_value.isdigit() or (not new_value.startswith('-') and new_value[1:].isdigit()) or new_value == ""
+# def validate_integer_input(new_value):
+#     # Allow empty input, or a string that represents a valid integer
+#     return new_value.isdigit() or (not new_value.startswith('-') and new_value[1:].isdigit()) or new_value == ""
+
+
+# Function to validate the input as an integer within a min-max range
+def validate_integer_input(char, min_value=-1, max_value=-1):
+    if char == "":  # Allow deleting all characters (empty entry)
+        return True
+    try:
+        # Convert the input to an integer
+        num = int(char)
+
+        # Check if min_value is provided (greater than -1), and the number is >= min_value
+        if min_value > -1 and num < min_value:
+            return False
+
+        # Check if max_value is provided (greater than -1), and the number is <= max_value
+        if max_value > -1 and num > max_value:
+            return False
+
+        return True  # Return True if within the valid range
+    except ValueError:
+        return False  # If it's not an integer, reject it
+
+
 
 def validate_float_input(new_value):
     # Allow empty input, or a string that represents a valid float
