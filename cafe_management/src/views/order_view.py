@@ -25,7 +25,8 @@ column_order_details = {
     "columns_name_display": ["Mã", "Mã đơn hàng", "Tên sản phẩm", "Số lượng", "Giá tiền"],
     "columns_name": ["id", "order_id", "product_name", "quality", "price"],
     "data_init": {"id": "", "order_id": "", "product_name": "", "quality": 0, "price": 0},
-    "validates": ["string", "string", list, "integer", "decimal"]
+    "validates": ["string", "string", "list", "int", "float"],
+    "maxvalues": ["string", "string", "list", "int", "float"]
 }
 
 

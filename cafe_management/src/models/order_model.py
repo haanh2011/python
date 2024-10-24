@@ -4,10 +4,6 @@ class Order():
         self.customer_id = customer_id  # Có thể là một đối tượng Customer
         self.total_price = total_price
 
-    def add_order_detail(self, product, quantity, price):
-        order_detail = OrderDetail(product, quantity, price)
-        # order_details.append(order_detail)
-
     def update_id(self, id):
         self.id = id
 

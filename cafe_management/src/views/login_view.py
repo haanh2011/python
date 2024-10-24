@@ -41,7 +41,7 @@ def create_login_frame():
 
             # Check if the provided password matches the hashed password
             if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
-                messagebox.showinfo("Success", "Đăng nhập thành công!")
+                # messagebox.showinfo("Success", "Đăng nhập thành công!")
                 login_root.destroy()  # Close login window on success
                 show_main_app()  # Show main application window after login success
                 return True

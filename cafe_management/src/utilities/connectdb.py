@@ -309,9 +309,10 @@ def insert_data(table_name, data):
         cnx.commit()
 
         print("Data inserted successfully!")
-
+        return ""
     except mysql.connector.Error as err:
         print(f"Error: {err}")
+        return err
     finally:
         # Close the cursor and connection  
 
@@ -344,11 +345,8 @@ def update_data(table_name, data, data_id):
         # Chuẩn bị câu lệnh SQL
         set_clause = ', '.join([f"{key} = %s" for key in attributes])
         sql = f"UPDATE `{DB_NAME}`.`{table_name}` SET {set_clause} WHERE id = '{data_id}'"
-        print("sql", sql)
         # Chuẩn bị giá trị cho câu lệnh SQL
         values = tuple(attributes.values())
-        print(sql % values)
-        print("values", values)
         # Thực hiện câu lệnh UPDATE với các giá trị dữ liệu
         cursor.execute(sql, values)
 
@@ -356,6 +354,7 @@ def update_data(table_name, data, data_id):
         cnx.commit()
 
         print("Data updated successfully!")
+        return ""
 
     except mysql.connector.Error as err:
         print(f"Error: {err}")
@@ -375,9 +374,10 @@ def delete_data(table_name, id_data):
     try:
         cursor.execute(f"UPDATE {table_name} SET is_delete = 1 WHERE id='{id_data}'")
         db.commit()
+        return ""
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-
+        return err
     finally:
         # Close the cursor and connection
         cursor.close()
@@ -415,10 +415,29 @@ def insert_user_admin(data):
         result = cursor.fetchall()
         if not result or len(result) == 0:
             insert_data("staffs", data)
-
     except mysql.connector.Error as err:
         print(f"Error: {err}")
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        db.close()
 
+
+def update_point_of_customer(customer_id, point_to_add):
+    db = connect_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute(
+            f"UPDATE {DB_NAME}.customers SET point = point + {point_to_add} WHERE id = '{customer_id}'")
+
+        # Commit thay đổi vào cơ sở dữ liệu
+        db.commit()
+
+        print("Data updated successfully!")
+        return ""
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return err
     finally:
         # Close the cursor and connection
         cursor.close()

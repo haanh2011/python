@@ -17,8 +17,12 @@ def get_data(name):
 
 def insert(name, data):
     item = staff_model.Staff(**data)
-    item.update_id(connectdb.generate_id(name))
-    return connectdb.insert_data(name, item)
+    result = get_user(item.username)
+    if result is None:
+        item.update_id(connectdb.generate_id(name))
+        return connectdb.insert_data(name, item)
+    else:
+        return "username đã tồn tại!"
 
 
 def update(name, data):
@@ -29,5 +33,6 @@ def update(name, data):
 def delete(name, data_id):
     return connectdb.delete_data(name, data_id)
 
-def get_user(username, password):
-    return connectdb.get_user(username, password)
+
+def get_user(username):
+    return connectdb.get_user(username)

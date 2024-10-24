@@ -15,7 +15,8 @@ columns = {
     "columns_name_display": ["Mã loại", "Tên loại sản phẩm"],  # Tên column hiển thị trên grid view
     "columns_name": ["id", "name"],  # sử dụng để thao tác insert, update delete data
     "data_init": {"id": "", "name": ""},  # sử dụng để set data init
-    "validates": ["string", "string"]  # sử dụng để check valid data
+    "validates": ["string", "string"],  # sử dụng để check valid data
+    "max_values": [20, 150]  # sử dụng để check max length or max value
 }
 
 

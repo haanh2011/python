@@ -1,111 +1,87 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 
+def validate_integer_input(new_value):
+    """Validate integer input."""
+    if new_value == "":
+        return True  # Allow empty input
+    return new_value.isdigit() or (new_value.startswith('-') and new_value[1:].isdigit())
 
-# Tạo hàm chứa add list product cho order
-def create_entry_add_list_product(form_frame, product_values, idx, product_list):
-    # Label for Product
-    product_label = tk.Label(form_frame, text="Product:")
-    product_label.grid(row=idx + 1, column=0, sticky="ew")
+def validate_float_input(new_value):
+    """Validate float input."""
+    if new_value == "":
+        return True  # Allow empty input
+    try:
+        float(new_value)  # Try to convert to float
+        return True
+    except ValueError:
+        return False  # Not a valid float
 
-    # Combobox để nhập tên sản phẩm
-    selected_data = tk.StringVar()
-    product_combobox = ttk.Combobox(form_frame, textvariable=selected_data, values=product_values, width=35,
-                                    state="readonly")
-    product_combobox.grid(row=idx + 1, column=1, sticky="ew")
+def validate_length_input(new_value):
+    """Validate input length."""
+    max_length = 10
+    return len(new_value) <= max_length  # Accept input if within the limit
 
-    # Label for Quantity
-    quantity_label = tk.Label(form_frame, text="Quantity:")
-    quantity_label.grid(row=idx + 2, column=0, sticky="ew")
-    quantity_entry = tk.Entry(form_frame)
-    quantity_entry.grid(row=idx + 2, column=1, sticky="ew")
+# Function to update validation message
+def update_validation_message(entry, message_label, validation_function):
+    """Update validation message based on input."""
+    new_value = entry.get()
+    if validation_function(new_value):
+        message_label.config(text="", fg="green")  # Clear message if valid
+    else:
+        message_label.config(text="Invalid input", fg="red")  # Show error message
 
-    # Treeview to display added products
-    tree = ttk.Treeview(form_frame, columns=("Id", "Name", "Quantity"), show="headings")
+# Main application code
+root = tk.Tk()
+root.title("Input Validation Example")
 
-    # Set up Treeview columns and headers
-    tree.heading("Id", text="Id")
-    tree.heading("Name", text="Name")
-    tree.heading("Quantity", text="Quantity")
-    tree.column("Id", anchor="center", width=50)
-    tree.column("Name", anchor="w", width=150)
-    tree.column("Quantity", anchor="center", width=100)
+# Register validation functions
+validate_integer_cmd = root.register(validate_integer_input)
+validate_float_cmd = root.register(validate_float_input)
+validate_length_cmd = root.register(validate_length_input)
 
-    tree.grid(row=idx + 4, column=0, columnspan=2, sticky="ew")
+# Create Entry for Integer Input
+int_frame = tk.Frame(root)
+int_frame.pack(padx=20, pady=5)
+int_entry = tk.Entry(int_frame, validate="key", validatecommand=(validate_integer_cmd, "%P"))
+int_entry.pack(side="top")
+int_message = tk.Label(int_frame, text="")
+int_message.pack(side="bottom")
+int_entry.bind("<KeyRelease>", lambda e: update_validation_message(int_entry, int_message, validate_integer_input))
 
-    def add_product():
-        """Xử lý khi nhấn nút Add."""
-        # Get product id and name from the combobox
-        product_id = product_combobox.get().split("-")[0].strip()
-        product_name = product_combobox.get().split("-")[1].strip()
-        quantity = quantity_entry.get().strip()
+# Create Entry for Float Input
+float_frame = tk.Frame(root)
+float_frame.pack(padx=20, pady=5)
+float_entry = tk.Entry(float_frame, validate="key", validatecommand=(validate_float_cmd, "%P"))
+float_entry.pack(side="top")
+float_message = tk.Label(float_frame, text="")
+float_message.pack(side="bottom")
+float_entry.bind("<KeyRelease>", lambda e: update_validation_message(float_entry, float_message, validate_float_input))
 
-        if not product_id or not quantity:
-            messagebox.showwarning("Input Error", "Both product name and quantity are required.")
-            return
+# Create Entry for Length Input
+length_frame = tk.Frame(root)
+length_frame.pack(padx=20, pady=5)
+length_entry = tk.Entry(length_frame, validate="key", validatecommand=(validate_length_cmd, "%P"))
+length_entry.pack(side="top")
+length_message = tk.Label(length_frame, text="")
+length_message.pack(side="bottom")
+length_entry.bind("<KeyRelease>", lambda e: update_validation_message(length_entry, length_message, validate_length_input))
 
-        try:
-            quantity = int(quantity)
-        except ValueError:
-            messagebox.showwarning("Input Error", "Quantity must be a number.")
-            return
+# Button to show entered values
+def show_values():
+    int_value = int_entry.get()
+    float_value = float_entry.get()
+    length_value = length_entry.get()
 
-        # Add product data to the passed product_list
-        product_list.append((product_id, product_name, quantity))
+    # Check if all entries are valid before showing values
+    if (validate_integer_input(int_value) and
+        validate_float_input(float_value) and
+        validate_length_input(length_value)):
+        messagebox.showinfo("Entered Values", f"Integer: {int_value}\nFloat: {float_value}\nLength: {length_value}")
+    else:
+        messagebox.showerror("Error", "Please correct the invalid inputs before submitting.")
 
-        # Add product to Treeview
-        tree.insert("", "end", values=(product_id, product_name, quantity))
+submit_button = tk.Button(root, text="Submit", command=show_values)
+submit_button.pack(pady=10)
 
-        # Clear input fields
-        product_combobox.set('')
-        quantity_entry.delete(0, tk.END)
-
-    def save_products():
-        """Xử lý khi nhấn nút Save."""
-        # Get all items from Treeview
-        products_in_tree = []
-        for item in tree.get_children():
-            product_data = tree.item(item, 'values')
-            products_in_tree.append(product_data)
-
-        if not products_in_tree:
-            messagebox.showwarning("Save Error", "No products to save.")
-        else:
-            # Show saved data (You can handle the data however you need here)
-            print("Saved Products:", products_in_tree)
-            messagebox.showinfo("Success", "Products saved successfully!")
-            # Optionally, return or process this data further
-
-    # Button to add product
-    add_button = tk.Button(form_frame, text="Add", command=add_product)
-    add_button.grid(row=idx + 3, column=0, columnspan=1, sticky="ew")
-
-    # Button to save products
-    save_button = tk.Button(form_frame, text="Save", command=save_products)
-    save_button.grid(row=idx + 3, column=1, columnspan=1, sticky="ew")
-
-
-# Sample usage of the function
-def main():
-    root = tk.Tk()
-    root.title("Order Form")
-
-    # Frame for form
-    form_frame = tk.Frame(root)
-    form_frame.pack(padx=10, pady=10)
-
-    # Sample product data to show in combobox
-    product_values = ["1 - Product A", "2 - Product B", "3 - Product C"]
-
-    # Initialize product list data (this will be updated inside the function)
-    product_list_data = []
-
-    # Call the function to create product input form
-    create_entry_add_list_product(form_frame, product_values, 0, product_list_data)
-
-    root.mainloop()
-
-
-# Run the example
-if __name__ == "__main__":
-    main()
+root.mainloop()

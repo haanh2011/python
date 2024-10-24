@@ -25,7 +25,7 @@ def get_data_details(name, order_id):
     return connectdb.get_data_by_value(name, "order_id", order_id)
 
 
-def insert(name,data):
+def insert(name, data):
     products_info = data.pop("products_info")
 
     item = order_model.Order(**data)
@@ -34,7 +34,8 @@ def insert(name,data):
     for product in products_info:
         product["id"] = connectdb.generate_id("order_details")
         product["order_id"] = item.id
-        insert_details("order_details",product)
+        insert_details("order_details", product)
+    mess = connectdb.update_point_of_customer(item.customer_id, int(float(item.total_price) / 1000.0))
 
 
 def insert_details(name, data):
@@ -51,7 +52,7 @@ def update(name, data):
     for product in products_info:
         product["id"] = connectdb.generate_id("order_details")
         product["order_id"] = item.id
-        update_details("order_details",product)
+        update_details("order_details", product)
 
 
 def update_details(name, data):

@@ -1,6 +1,8 @@
 import sys, os
 import tkinter as tk
 from tkinter import ttk, messagebox
+from types import NoneType
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
@@ -460,26 +462,6 @@ def create_frame_order(frame_actions):
     return frame_order
 
 
-def create_date_entry(parent, format="%Y-%m-%d"):
-    """Creates an entry field for date input with the specified format.
-
-    Args:
-        parent: The parent widget for the entry field.
-        format: The desired format for the date input (default: "%Y-%m-%d").
-
-    Returns:
-        The created entry field widget.
-    """
-
-    entry = ttk.Entry(parent)
-    entry.pack()
-
-    # Bind the entry field to a validation function
-    entry.configure(validate="key", validatecommand=(entry.register(validate.validate_date), "%P", format))
-
-    return entry
-
-
 # Hàm để lấy dữ liệu từ Treeview và chuyển thành danh sách các dicts
 def get_treeview_data_to_dict(treeview):
     treeview_data = []
@@ -498,7 +480,7 @@ def get_treeview_data_to_dict(treeview):
     return treeview_data
 
 
-def get_widget_values(widgets):
+def get_widget_values(widgets, is_add):
     """Retrieves values from various widget types in a dictionary.
 
     Args:
@@ -507,9 +489,9 @@ def get_widget_values(widgets):
     Returns:
         dict: A dictionary containing widget labels as keys and their respective values as values.
     """
-
     data = {}
     for label, widget in widgets.items():
+        print("value widget.winfo_name()", widget.winfo_name())
         if isinstance(widget, tk.Text):
             value = widget.get('1.0', 'end')
             print("value Text", value)
@@ -524,7 +506,11 @@ def get_widget_values(widgets):
             value = widget.get()
             print("value Entry", value)
         else:
-            value = None  # Handle unsupported widget types
+            value = ""  # Handle unsupported widget types
+        if is_add and widget.winfo_name() != "id" and value == "":
+            messagebox.showerror("Error", f"Vui lòng điền đầy đủ thông tin!")  # Thông báo lỗi
+            return None
+
         print(widget.winfo_name())
         data[widget.winfo_name()] = value
     return data
@@ -544,12 +530,11 @@ def set_width_height_top_level(top_level, width, height):
 
 
 # Tạo hàm chứa add list product cho order
-def create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data_id, total_price):
-    print("data_id", data_id)
+def create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data_id, total_price,
+                                  validate_integer_cmd):
     data_details = {}
     if data_id != "":
         data_details = order_view.get_all_data_details(data_id)
-    print("data_details", data_details)
     product_label = tk.Label(form_frame, text="Sản phẩm:",
                              font=("Helvetica", 12),
                              foreground="#000000",
@@ -570,7 +555,7 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
                               foreground="#000000",
                               padx=10, pady=10)
     quantity_label.grid(row=idx + 2, column=0, sticky="ew")
-    quantity_entry = tk.Entry(form_frame)
+    quantity_entry = tk.Entry(form_frame, validate="key", validatecommand=(validate_integer_cmd, "%P"))
     quantity_entry.grid(row=idx + 2, column=1, sticky="ew")
 
     def add_product():
@@ -728,6 +713,12 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
 
     num_widget_add = 0  # Tạo các trường nhập liệu dựa trên fields
 
+    # Register validation functions
+    validate_integer_cmd = form_frame.register(validate.validate_integer_input)
+    validate_float_cmd = form_frame.register(validate.validate_float_input)
+    validate_length_cmd = form_frame.register(validate.validate_length_input)
+    validate_phone_cmd = form_frame.register(validate.validate_phone_input)
+
     for idx, (col_name) in enumerate(dict_cols["columns_name"]):
         index = num_widget_add + idx
         # Tạo widget tương ứng
@@ -746,6 +737,12 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 entry = tk.Entry(form_frame, width=35, name=col_name)
                 if dict_cols["validates"][idx] == "password":
                     entry.config(show='*')
+                if dict_cols["validates"][idx] == "int":
+                    entry.config(validate="key", validatecommand=(validate_integer_cmd, "%P"))
+                if dict_cols["validates"][idx] == "float":
+                    entry.config(validate="key", validatecommand=(validate_float_cmd, "%P"))
+                if dict_cols["validates"][idx] == "phone":
+                    entry.config(validate="key", validatecommand=(validate_phone_cmd, "%P"))
                 if not is_add:
                     entry.insert(tk.END, data["values"][idx])  # Set the default text to data["values"][idx]
                 widgets[col_name] = entry
@@ -753,14 +750,15 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 text = tk.Text(form_frame, width=35, height=6, name=col_name)
                 if not is_add:
                     text.insert('1.0', data["values"][idx])
-                    widgets[col_name] = text
+                widgets[col_name] = text
             case "Product_list":
                 product_values = dict_cols["data_init"][col_name]["combobox_values"]
                 if not is_add:
                     create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data["values"][0],
-                                                  data["values"][3])
+                                                  data["values"][3], validate_integer_cmd)
                 else:
-                    create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, "", 0)
+                    create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, "",
+                                                  0, validate_integer_cmd)
                 num_widget_add = 5
             # các loại widget khác nếu có
 
@@ -776,15 +774,21 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
         """
         Lưu dữ liệu khi nhấn nút "Save".
         """
-        data = get_widget_values(widgets)
-        if is_add:
-            controller.insert(name, data)  # Thêm dữ liệu vào cơ sở dữ liệu
+        data = get_widget_values(widgets, is_add)
+        mess_error = ""
+        if data != None:
+            if is_add:
+                mess_error = controller.insert(name, data)  # Thêm dữ liệu vào cơ sở dữ liệu
+            else:
+                mess_error = controller.update(name, data)  # Update dữ liệu vào cơ sở dữ liệu
+
+        print("mess_error", mess_error)
+        if mess_error != "" and mess_error != None:
+            messagebox.showerror("Error", mess_error)
         else:
-            controller.update(name, data)  # Update dữ liệu vào cơ sở dữ liệu
-        dialog_frame.destroy()  # Đóng dialog
-        messagebox.showinfo("Success", f"{display_name} added successfully!")  # Thông báo thành công
-        if on_success:
-            on_success()  # Cập nhật Treeview
+            dialog_frame.destroy()  # Đóng dialog
+            if on_success:
+                on_success()  # Cập nhật Treeview
 
     def on_cancel():
         dialog_frame.destroy()

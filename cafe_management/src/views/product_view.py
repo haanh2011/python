@@ -16,7 +16,7 @@ columns = {
     "columns_name": ["id", "category_id", "name", "price", "description"],
     "data_init": {"id": "", "category_id": {"value_default": "", "combobox_value": []}, "name": "", "price": 0,
                   "description": ""},
-    "validates": ["string", "string", "string", "decimal", "text"]
+    "validates": ["string", "string", "string", "float", "text"]
 }
 
 

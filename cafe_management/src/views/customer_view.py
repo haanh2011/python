@@ -14,7 +14,8 @@ columns = {
     "columns_name_display": ["Mã", "Tên", "Điện thoại", "Địa chỉ", "Điểm"],
     "columns_name": ["id", "name", "phone", "address", "point"],
     "data_init": {"id": "", "name": "", "phone": "", "address": "", "point": 0},
-    "validates": ["string", "string", "string", "string", "int"]
+    "validates": ["string", "string", "phone", "string", "int"],  # sử dụng để check valid data
+    "max_values": [20, 150]  # sử dụng để check max length or max value
 }
 
 

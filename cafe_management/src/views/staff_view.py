@@ -14,7 +14,7 @@ columns = {
     "columns_name_display": ["Mã", "Tên", "Username", "Password", "Điện thoại", "Địa chỉ"],
     "columns_name": ["id", "name", "username", "password", "phone", "address"],
     "data_init": {"id": "", "name": "", "username": "", "password": "", "phone": "", "address": ""},
-    "validates": ["string", "string", "string", "password", "string", "string"]
+    "validates": ["string", "string", "string", "password", "phone", "string"]
 }
 
 
