@@ -21,7 +21,7 @@ import dashboard_view
 def create_root_window(width, height):
     return window.create_root_window("Ứng dụng Quản Lý Quán Cà Phê", width, height)
 
-def frame_main(frame_root):
+def frame_main(frame_root, is_admin):
     window.create_header(frame_root)
 
     # Register the validation function with tkinter
@@ -62,28 +62,47 @@ def frame_main(frame_root):
     # Giữ tham chiếu đến photo để tránh garbage collection
     image_label_logo.image = logo  # Lưu giữ tham chiếu đến PhotoImage
     image_label_bg.image = bg  # Lưu giữ tham chiếu đến PhotoImage
+    if is_admin:
+        # Create the content frame
+        fr_dashboard = dashboard_view.create_frame(frame_root)
+        fr_category = category_view.create_frame(frame_root)
+        fr_product = product_view.create_frame(frame_root)
+        fr_order = order_view.create_frame(frame_root)
+        fr_invoice = invoice_view.create_frame(frame_root)
+        fr_customer = customer_view.create_frame(frame_root)
+        fr_staff = staff_view.create_frame(frame_root)
 
-    # Create the content frame
-    fr_dashboard = dashboard_view.create_frame(frame_root)
-    fr_category = category_view.create_frame(frame_root)
-    fr_product = product_view.create_frame(frame_root)
-    fr_order = order_view.create_frame(frame_root)
-    fr_invoice = invoice_view.create_frame(frame_root)
-    fr_customer = customer_view.create_frame(frame_root)
-    fr_staff = staff_view.create_frame(frame_root)
+        # List of frames and buttons
+        frames = [fr_dashboard, fr_category, fr_product, fr_order, fr_invoice, fr_customer, fr_staff]
+        buttons = []
 
-    # List of frames and buttons
-    frames = [fr_dashboard, fr_category, fr_product, fr_order, fr_invoice, fr_customer, fr_staff]
-    buttons = []
+        # Create buttons for the menu
+        btn_dashboard = dashboard_view.create_button_menu(dashboard_frame, fr_dashboard,  buttons, frames)
+        btn_category = category_view.create_button_menu(dashboard_frame, fr_category,  buttons, frames)
+        btn_product = product_view.create_button_menu(dashboard_frame, fr_product, buttons, frames)
+        btn_order = order_view.create_button_menu(dashboard_frame, fr_order, buttons, frames)
+        btn_invoice = invoice_view.create_button_menu(dashboard_frame, fr_invoice,  buttons, frames)
+        btn_customer = customer_view.create_button_menu(dashboard_frame, fr_customer,  buttons, frames)
+        btn_staff = staff_view.create_button_menu(dashboard_frame, fr_staff,  buttons, frames)
 
-    # Create buttons for the menu
-    btn_dashboard = dashboard_view.create_button_menu(dashboard_frame, fr_dashboard,  buttons, frames)
-    btn_category = category_view.create_button_menu(dashboard_frame, fr_category,  buttons, frames)
-    btn_product = product_view.create_button_menu(dashboard_frame, fr_product, buttons, frames)
-    btn_order = order_view.create_button_menu(dashboard_frame, fr_order, buttons, frames)
-    btn_invoice = invoice_view.create_button_menu(dashboard_frame, fr_invoice,  buttons, frames)
-    btn_customer = customer_view.create_button_menu(dashboard_frame, fr_customer,  buttons, frames)
-    btn_staff = staff_view.create_button_menu(dashboard_frame, fr_staff,  buttons, frames)
+        #Set hiển thị mặc định là order
+        window.show_frame(fr_order, frames, buttons, btn_order)
+    else:
+        # Create the content frame
+        fr_dashboard = dashboard_view.create_frame(frame_root)
+        fr_order = order_view.create_frame(frame_root)
+        fr_invoice = invoice_view.create_frame(frame_root)
+        fr_customer = customer_view.create_frame(frame_root)
 
-    #Set hiển thị mặc định là order
-    window.show_frame(fr_order, frames, buttons, btn_order)
+        # List of frames and buttons
+        frames = [fr_dashboard,  fr_order, fr_invoice, fr_customer]
+        buttons = []
+
+        # Create buttons for the menu
+        btn_dashboard = dashboard_view.create_button_menu(dashboard_frame, fr_dashboard, buttons, frames)
+        btn_order = order_view.create_button_menu(dashboard_frame, fr_order, buttons, frames)
+        btn_invoice = invoice_view.create_button_menu(dashboard_frame, fr_invoice, buttons, frames)
+        btn_customer = customer_view.create_button_menu(dashboard_frame, fr_customer,  buttons, frames)
+
+        # Set hiển thị mặc định là order
+        window.show_frame(fr_order, frames, buttons, btn_order)

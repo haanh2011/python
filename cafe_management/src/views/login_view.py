@@ -16,13 +16,13 @@ import window
 
 
 # Function to create the main application window after login success
-def show_main_app():
+def show_main_app(is_admin = False):
     # Tạo cửa sổ chính
     main_app_root = main_view.create_root_window(1280, 720)
     # Đảm bảo cửa sổ luôn căn giữa khi khởi động lại
     main_app_root.update_idletasks()  # Cập nhật cửa sổ trước khi lấy kích thước
 
-    main_view.frame_main(main_app_root)
+    main_view.frame_main(main_app_root,is_admin)
 
     main_app_root.mainloop()
 
@@ -43,7 +43,7 @@ def create_login_frame():
             if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
                 # messagebox.showinfo("Success", "Đăng nhập thành công!")
                 login_root.destroy()  # Close login window on success
-                show_main_app()  # Show main application window after login success
+                show_main_app(username == "admin")  # Show main application window after login success
                 return True
             messagebox.showerror("Error", "Tên đăng nhập hoặc mật khẩu không đúng!")
         else:

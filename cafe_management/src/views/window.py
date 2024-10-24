@@ -745,6 +745,8 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                     entry.config(validate="key", validatecommand=(validate_phone_cmd, "%P"))
                 if not is_add:
                     entry.insert(tk.END, data["values"][idx])  # Set the default text to data["values"][idx]
+                    if col_name == "username":
+                        entry.config(state="readonly")
                 widgets[col_name] = entry
             case "Text":
                 text = tk.Text(form_frame, width=35, height=6, name=col_name)
