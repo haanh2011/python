@@ -31,7 +31,7 @@ def create_login_frame():
     # Main window setup for login
     login_root = window.create_root_window("Đăng nhập", 400, 160)
     login_controller.add_user_admin()
-    def login():
+    def login(event=None): # Sử dụng event=None để có thể gọi hàm từ sự kiện hoặc trực tiếp
         username = username_entry.get()
         password = password_entry.get()
         result = login_controller.get_user(username)
@@ -67,6 +67,9 @@ def create_login_frame():
 
     login_button = ttk.Button(form_frame, text="Đăng Nhập", command=login)
     login_button.grid(row=3, column=0, columnspan=2, pady=10)
+
+    # Bind phím Enter để kích hoạt nút Đăng Nhập
+    login_root.bind('<Return>', login)  # 'Return' là sự kiện nhấn Enter
 
     form_frame.columnconfigure(1, weight=1)
     login_root.mainloop()
