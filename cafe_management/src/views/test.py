@@ -1,87 +1,102 @@
-import tkinter as tk
-from tkinter import messagebox
+import mysql.connector
+from datetime import datetime, timedelta
+import random
 
-def validate_integer_input(new_value):
-    """Validate integer input."""
-    if new_value == "":
-        return True  # Allow empty input
-    return new_value.isdigit() or (new_value.startswith('-') and new_value[1:].isdigit())
+# Establish a connection to the MySQL database
+connection = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Abc123",
+    database="ql_bancaphe"
+)
+cursor = connection.cursor()
 
-def validate_float_input(new_value):
-    """Validate float input."""
-    if new_value == "":
-        return True  # Allow empty input
-    try:
-        float(new_value)  # Try to convert to float
-        return True
-    except ValueError:
-        return False  # Not a valid float
+# Function to insert data
+def insert_data(query, values):
+    cursor.execute(query, values)
+    connection.commit()
 
-def validate_length_input(new_value):
-    """Validate input length."""
-    max_length = 10
-    return len(new_value) <= max_length  # Accept input if within the limit
+# Insert sample data for multiple months and larger volume
+def insert_large_sample_data():
+    current_date = datetime.now()
 
-# Function to update validation message
-def update_validation_message(entry, message_label, validation_function):
-    """Update validation message based on input."""
-    new_value = entry.get()
-    if validation_function(new_value):
-        message_label.config(text="", fg="green")  # Clear message if valid
-    else:
-        message_label.config(text="Invalid input", fg="red")  # Show error message
+    # Categories
+    categories = [
+        ("C001", "Coffee"),
+        ("C002", "Tea"),
+        ("C003", "Pastries"),
+        ("C004", "Juices"),
+        ("C005", "Smoothies")
+    ]
+    for category in categories:
+        insert_data("INSERT INTO categories (id, name) VALUES (%s, %s)", category)
 
-# Main application code
-root = tk.Tk()
-root.title("Input Validation Example")
+    # Products
+    products = [
+        ("P001", "C001", "Espresso", 2.50, "Strong coffee shot"),
+        ("P002", "C001", "Americano", 3.00, "Diluted espresso"),
+        ("P003", "C002", "Green Tea", 2.00, "Refreshing green tea"),
+        ("P004", "C003", "Croissant", 1.50, "Buttery pastry"),
+        ("P005", "C004", "Orange Juice", 3.00, "Freshly squeezed orange juice"),
+        ("P006", "C005", "Berry Smoothie", 4.50, "Mixed berry smoothie")
+    ]
+    for product in products:
+        insert_data("INSERT INTO products (id, category_id, name, price, description) VALUES (%s, %s, %s, %s, %s)", product)
 
-# Register validation functions
-validate_integer_cmd = root.register(validate_integer_input)
-validate_float_cmd = root.register(validate_float_input)
-validate_length_cmd = root.register(validate_length_input)
+    # Customers
+    customers = [
+        ("CU001", "John Doe", "0987654321", "123 Main St", 10),
+        ("CU002", "Jane Smith", "0981234567", "456 Oak St", 20),
+        ("CU003", "Jim Beam", "0976543210", "789 Maple St", 15),
+        ("CU004", "Lisa Ray", "0965432109", "123 Pine St", 25),
+        ("CU005", "Emily Stone", "0954321098", "987 Cedar St", 30)
+    ]
+    for customer in customers:
+        insert_data("INSERT INTO customers (id, name, phone, address, point) VALUES (%s, %s, %s, %s, %s)", customer)
 
-# Create Entry for Integer Input
-int_frame = tk.Frame(root)
-int_frame.pack(padx=20, pady=5)
-int_entry = tk.Entry(int_frame, validate="key", validatecommand=(validate_integer_cmd, "%P"))
-int_entry.pack(side="top")
-int_message = tk.Label(int_frame, text="")
-int_message.pack(side="bottom")
-int_entry.bind("<KeyRelease>", lambda e: update_validation_message(int_entry, int_message, validate_integer_input))
+    # Staff
+    staff = [
+        ("S001", "Alice Brown", "alice_b", "encrypted_password1", "0987654321", "789 Maple St"),
+        ("S002", "Bob White", "bob_w", "encrypted_password2", "0976543210", "456 Pine St")
+    ]
+    for s in staff:
+        insert_data("INSERT INTO staffs (id, name, username, password, phone, address) VALUES (%s, %s, %s, %s, %s, %s)", s)
 
-# Create Entry for Float Input
-float_frame = tk.Frame(root)
-float_frame.pack(padx=20, pady=5)
-float_entry = tk.Entry(float_frame, validate="key", validatecommand=(validate_float_cmd, "%P"))
-float_entry.pack(side="top")
-float_message = tk.Label(float_frame, text="")
-float_message.pack(side="bottom")
-float_entry.bind("<KeyRelease>", lambda e: update_validation_message(float_entry, float_message, validate_float_input))
+    # Insert orders and order details for each day in the last 6 months
+    for i in range(180):  # 180 days (~6 months)
+        order_date = current_date - timedelta(days=i)  # Create orders daily
+        order_id = f"O{i+1000}"
+        customer_id = random.choice(["CU001", "CU002", "CU003", "CU004", "CU005"])
+        staff_id = random.choice(["S001", "S002"])
+        total_price = random.uniform(10.00, 100.00)  # Random total price between 10 and 100
 
-# Create Entry for Length Input
-length_frame = tk.Frame(root)
-length_frame.pack(padx=20, pady=5)
-length_entry = tk.Entry(length_frame, validate="key", validatecommand=(validate_length_cmd, "%P"))
-length_entry.pack(side="top")
-length_message = tk.Label(length_frame, text="")
-length_message.pack(side="bottom")
-length_entry.bind("<KeyRelease>", lambda e: update_validation_message(length_entry, length_message, validate_length_input))
+        # Insert order
+        insert_data("INSERT INTO orders (id, customer_id, staff_id, order_date, total_price) VALUES (%s, %s, %s, %s, %s)",
+                    (order_id, customer_id, staff_id, order_date, total_price))
 
-# Button to show entered values
-def show_values():
-    int_value = int_entry.get()
-    float_value = float_entry.get()
-    length_value = length_entry.get()
+        # Insert multiple order details for each order
+        num_items = random.randint(1, 5)  # 1 to 5 items per order
+        for j in range(num_items):
+            product = random.choice(products)
+            quantity = random.randint(1, 3)
+            price = product[3]
+            order_detail_id = f"OD{i+1000}{j}"
+            insert_data("INSERT INTO order_details (id, order_id, product_name, quantity, price) VALUES (%s, %s, %s, %s, %s)",
+                        (order_detail_id, order_id, product[2], quantity, price * quantity))
 
-    # Check if all entries are valid before showing values
-    if (validate_integer_input(int_value) and
-        validate_float_input(float_value) and
-        validate_length_input(length_value)):
-        messagebox.showinfo("Entered Values", f"Integer: {int_value}\nFloat: {float_value}\nLength: {length_value}")
-    else:
-        messagebox.showerror("Error", "Please correct the invalid inputs before submitting.")
+    # Insert invoices linked to orders
+    for i in range(180):
+        order_id = f"O{i+1000}"
+        invoice_id = f"IN{i+1000}"
+        invoice_date = current_date - timedelta(days=i)
+        total_amount = random.uniform(50.00, 200.00)
+        payment_status = random.choice([0, 1])  # 0 for unpaid, 1 for paid
+        insert_data("INSERT INTO invoices (id, order_id, invoice_date, total_amount, payment_status) VALUES (%s, %s, %s, %s, %s)",
+                    (invoice_id, order_id, invoice_date, total_amount, payment_status))
 
-submit_button = tk.Button(root, text="Submit", command=show_values)
-submit_button.pack(pady=10)
+# Run the data insertion function
+insert_large_sample_data()
 
-root.mainloop()
+# Close the database connection
+cursor.close()
+connection.close()

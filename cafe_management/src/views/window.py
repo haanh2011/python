@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from src.views import styles, order_view
 from styles import *
 from src.helper.clock_frame import *
+import seaborn as sns
 
 from PIL.ImageOps import expand
 from numpy.ma.core import filled
@@ -175,7 +176,7 @@ def create_tree_view(frame_treeview, dict_cols, rows):
     return tr
 
 
-def create_actions(frame_action, name, show_details_item, add_item, update_item, delete_item):
+def create_actions(frame_action, name, show_details_item, add_item, update_item, delete_item, staff_id):
     # Tạo nút 'Add' và đặt nó ở phía trên, bên phải của sub_frame
     add_button = button_image.create_image_button(
         frame_action, "add_btn", "Thêm", "images/add.png",
@@ -198,21 +199,23 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
         state=tk.DISABLED
     )
     update_button.grid(row=0, column=1, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
+    if staff_id == "admin":
+        delete_button = button_image.create_image_button(
+            frame_action,
+            "add_btn",
+            "Xoá",
+            "images/delete.png",
+            command=lambda: delete_item(),
+            tooltip_text="Xoá",
+            bg="#CD5555",  # Màu nền tùy chỉnh
+            fg="white",  # Màu chữ tùy chỉnh
+            state=tk.DISABLED
+        )
+        delete_button.grid(row=0, column=2, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
 
-    delete_button = button_image.create_image_button(
-        frame_action,
-        "add_btn",
-        "Xoá",
-        "images/delete.png",
-        command=lambda: delete_item(),
-        tooltip_text="Xoá",
-        bg="#CD5555",  # Màu nền tùy chỉnh
-        fg="white",  # Màu chữ tùy chỉnh
-        state=tk.DISABLED
-    )
-    delete_button.grid(row=0, column=2, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-
-    widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
+        widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
+    else:
+        widgets = {"add_button": add_button, "update_button": update_button}
     if name == "orders":
         show_details_button = button_image.create_image_button(
             frame_action, "add_btn", "Chi tiết", "images/order.png",
@@ -323,7 +326,7 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
     widgets = create_actions(frame_action=frame_action, name=name, show_details_item=show_details_item,
                              add_item=add_item,
                              update_item=update_item,
-                             delete_item=delete_item)
+                             delete_item=delete_item, staff_id=staff_id)
 
     # Bind the click outside event to the root window
     def on_select(event):
@@ -825,46 +828,54 @@ def create_frame_treeview_details(controller, frame_parent, name, display_name, 
     tree = create_tree_view(frame_treeview, dict_cols, rows)
 
 
-def create_frame_dashboard(frame_parent):
-    # Tạo frame dashboard
-    frame_dashboard = tk.Frame(frame_parent, padx=20, pady=10, bg="#f0f0f0")
-    frame_dashboard.pack(fill="both", expand=True)
+# Function to create the dashboard frame
+def create_frame_dashboard(frame_parent, orders_data, customers_data, products_data, staffs_data):
+    # Create dashboard frame
+    frame_dashboard = tk.Frame(frame_parent,name=f"fr_dashboard", padx=20, pady=10, bg="#f0f0f0")
+    frame_dashboard.pack(side=tk.TOP,fill="both", expand=True)
 
-    # Cấu hình mở rộng cột để căn giữa nội dung
+    # Configure column to center content
     frame_dashboard.columnconfigure(0, weight=1)
 
-    # Tạo tiêu đề
+    # Create title label
     lbl_title = tk.Label(frame_dashboard, text="Bảng Thống Kê Doanh Thu", font=("Arial", 18, "bold"), bg="#f0f0f0")
     lbl_title.grid(row=0, column=0, pady=10, sticky="ew")
 
-    # Dữ liệu doanh thu giả theo tháng
-    data = {
-        "months": ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
-        "revenues": [10000000, 15000000, 12000000, 18000000, 20000000, 25000000]
-    }
+    # Create a figure to hold 4 subplots
+    fig, axs = plt.subplots(2, 2, figsize=(12, 6))
 
-    # Tạo vùng biểu đồ doanh thu
-    fig, ax = plt.subplots(figsize=(6, 4))
+    # Chart 1: Monthly Sales
+    sns.barplot(x='Month', y='Sales', data=orders_data, ax=axs[0, 0])
+    axs[0, 0].set_title('Doanh số hàng tháng')
+    axs[0, 0].set_ylabel('Tổng doanh số (VND)')
+    axs[0, 0].set_xlabel('Tháng')
+
+    # Chart 2: New Customers per Month
+    sns.lineplot(x='Month', y='New_Customers', data=customers_data, marker='o', ax=axs[0, 1])
+    axs[0, 1].set_title('Khách hàng mới mỗi tháng')
+    axs[0, 1].set_ylabel('Khách hàng mới')
+    axs[0, 1].set_xlabel('Tháng')
+
+    # Chart 3: Top Selling Products
+    sns.barplot(x='name', y='Quantity_Sold', data=products_data, ax=axs[1, 0])
+    axs[1, 0].set_title('Sản phẩm bán chạy nhất')
+    axs[1, 0].set_ylabel('Số lượng đã bán')
+    axs[1, 0].set_xlabel('Sản phẩm')
+
+    # Chart 4: Staff Performance
+    sns.barplot(x='name', y='Orders_Handled', data=staffs_data, ax=axs[1, 1])
+    axs[1, 1].set_title('Hiệu suất của nhân viên')
+    axs[1, 1].set_ylabel('Đơn hàng đã xử lý')
+    axs[1, 1].set_xlabel('Nhân viên')
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Embed the figure into the Tkinter frame using FigureCanvasTkAgg
     canvas = FigureCanvasTkAgg(fig, master=frame_dashboard)
-    canvas.get_tk_widget().grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+    canvas.get_tk_widget().grid(row=1, column=0, padx=10, pady=10)
 
-    # Vẽ biểu đồ doanh thu theo tháng
-    months = data["months"]
-    revenues = data["revenues"]
-    ax.bar(months, revenues, color="blue")
-    ax.set_title("Doanh thu theo tháng")
-    ax.set_xlabel("Tháng")
-    ax.set_ylabel("Doanh thu (VND)")
-
-    # Cập nhật biểu đồ
+    # Draw the canvas
     canvas.draw()
-
-    # Tính tổng doanh thu
-    total_revenue = sum(revenues)
-
-    # Hiển thị tổng doanh thu
-    lbl_total = tk.Label(frame_dashboard, text=f"Tổng Doanh Thu: {total_revenue:,} VND", font=("Arial", 14),
-                         bg="#f0f0f0")
-    lbl_total.grid(row=2, column=0, columnspan=2, pady=10)
 
     return frame_dashboard

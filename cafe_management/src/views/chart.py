@@ -11,12 +11,9 @@ import seaborn as sns
 # Lấy dữ liệu cho biểu đồ
 orders_data = connectdb.get_data_from_db_for_chart("SELECT MONTH(order_date) as Month, SUM(total_price) as Sales FROM orders GROUP BY Month")
 customers_data =  connectdb.get_data_from_db_for_chart("SELECT MONTH(order_date) as Month, COUNT(DISTINCT customer_id) as New_Customers FROM orders GROUP BY Month")
-products_data =  connectdb.get_data_from_db_for_chart("SELECT name, SUM(order_details.quantity) as Quantity_Sold FROM products JOIN order_details ON products.id = order_details.product_name GROUP BY name")
-staffs_data =  connectdb.get_data_from_db_for_chart("SELECT staffs.name, COUNT(orders.id) as Orders_Handled FROM staffs JOIN orders ON staffs.id = orders.customer_id GROUP BY staffs.name")
-print("orders_data",orders_data)
-print("customers_data",customers_data)
-print("products_data",products_data)
-print("staffs_data",staffs_data)
+products_data =  connectdb.get_data_from_db_for_chart("SELECT order_details.product_name as name, SUM(order_details.quantity) as Quantity_Sold FROM products JOIN order_details ON products.name = order_details.product_name GROUP BY name")
+staffs_data =  connectdb.get_data_from_db_for_chart("SELECT staffs.name, COUNT(orders.id) as Orders_Handled FROM staffs JOIN orders ON staffs.id = orders.staff_id GROUP BY staffs.name")
+
 # Tạo figure để chứa 4 biểu đồ
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
