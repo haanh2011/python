@@ -28,9 +28,10 @@ def get_all_data():
     return staff_controller.get_data(name)
 
 
-def create_frame(frame_parent):
+def create_frame(frame_parent, staff_id):
     rows = get_all_data()
-    frame = window.create_frame_actions_treeview(staff_controller, frame_parent, name, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(staff_controller, frame_parent, name, display_name, columns, rows,
+                                                 staff_id)
     return frame
 
 

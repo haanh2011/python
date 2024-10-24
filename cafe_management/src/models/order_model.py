@@ -1,8 +1,9 @@
 class Order():
-    def __init__(self, id, customer_id, total_price):
+    def __init__(self, id, staff_id, customer_id, total_price):
         self.id = id
         self.customer_id = customer_id  # Có thể là một đối tượng Customer
         self.total_price = total_price
+        self.staff_id = staff_id
 
     def update_id(self, id):
         self.id = id

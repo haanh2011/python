@@ -62,15 +62,16 @@ def frame_main(frame_root, staff_id):
     # Giữ tham chiếu đến photo để tránh garbage collection
     image_label_logo.image = logo  # Lưu giữ tham chiếu đến PhotoImage
     image_label_bg.image = bg  # Lưu giữ tham chiếu đến PhotoImage
+    print("staff_id", staff_id)
     if staff_id == "admin":
         # Create the content frame
         fr_dashboard = dashboard_view.create_frame(frame_root)
-        fr_category = category_view.create_frame(frame_root)
-        fr_product = product_view.create_frame(frame_root)
-        fr_order = order_view.create_frame(frame_root)
-        fr_invoice = invoice_view.create_frame(frame_root)
-        fr_customer = customer_view.create_frame(frame_root)
-        fr_staff = staff_view.create_frame(frame_root)
+        fr_category = category_view.create_frame(frame_root,staff_id)
+        fr_product = product_view.create_frame(frame_root,staff_id)
+        fr_order = order_view.create_frame(frame_root,staff_id)
+        fr_invoice = invoice_view.create_frame(frame_root,staff_id)
+        fr_customer = customer_view.create_frame(frame_root,staff_id)
+        fr_staff = staff_view.create_frame(frame_root,staff_id)
 
         # List of frames and buttons
         frames = [fr_dashboard, fr_category, fr_product, fr_order, fr_invoice, fr_customer, fr_staff]
@@ -90,9 +91,9 @@ def frame_main(frame_root, staff_id):
     else:
         # Create the content frame
         fr_dashboard = dashboard_view.create_frame(frame_root)
-        fr_order = order_view.create_frame(frame_root)
-        fr_invoice = invoice_view.create_frame(frame_root)
-        fr_customer = customer_view.create_frame(frame_root)
+        fr_order = order_view.create_frame(frame_root,staff_id)
+        fr_invoice = invoice_view.create_frame(frame_root,staff_id)
+        fr_customer = customer_view.create_frame(frame_root,staff_id)
 
         # List of frames and buttons
         frames = [fr_dashboard,  fr_order, fr_invoice, fr_customer]

@@ -11,7 +11,8 @@ sys.path.append(views_dir)
 import styles
 import window
 
-def show_dialog(controller, frame_parent, dict_cols, name, display_name, on_success=None):
+
+def show_dialog(controller, frame_parent, dict_cols, name, display_name, staff_id, on_success=None):
     """
     Hiển thị hộp thoại thêm dữ liệu.
         :param controller: Controller quản lý việc thêm dữ liệu.
@@ -20,7 +21,6 @@ def show_dialog(controller, frame_parent, dict_cols, name, display_name, on_succ
         :param type_name: Loại dữ liệu được thêm.
         :param on_success: Hàm callback để cập nhật Treeview.
     """
-
     if frame_parent is NoneType:
         messagebox.showerror("Error", "Parent frame is not valid.")
         return
@@ -36,4 +36,7 @@ def show_dialog(controller, frame_parent, dict_cols, name, display_name, on_succ
 
     # Gọi hàm dialog từ file styles.py để áp dụng style
     styles.dialog()
-    window.create_frame_in_dialog(controller, dialog_add, width, frame_parent, dict_cols, name, display_name, on_success)
+
+    window.create_frame_in_dialog(controller=controller, dialog_frame=dialog_add, width=width,
+                                  parent_frame=frame_parent, dict_cols=dict_cols, name=name, display_name=display_name,
+                                  on_success=on_success, staff_id=staff_id, data=[], is_add=True)

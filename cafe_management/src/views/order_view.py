@@ -5,18 +5,18 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 controllers_dir = os.path.join(current_dir, '../controllers')
 sys.path.append(controllers_dir)
 import window
-import order_controller, customer_view, product_view
+import order_controller, customer_view, product_view, main_view
 
 name = "orders"
 name_details = "order_details"
 display_name = "Đơn Hàng"
 display_name_detail = "Chi Tiết Đơn Hàng"
 column_orders = {
-    "widget_type": ["Entry", "Combobox", "", "Date", "Product_list"],
+    "widget_type": ["Entry", "Combobox", "Entry", "Date", "Product_list"],
     "columns_name_display": ["Mã", "Khách hàng", "Nhân Viên", "Ngày tạo", "Tổng tiền"],
     "columns_name": ["id", "customer_id", "staff_id", "order_date", "products_info"],
     "data_init": {"id": "", "customer_id": {"value_default": "", "combobox_value": []},
-                  "staff_id":"", "order_date":"",
+                  "staff_id": "", "order_date": "",
                   "products_info": {"value_default": "", "combobox_value": []}},
     "validates": ["string", "string", "string", "string", "list"]
 }
@@ -48,11 +48,11 @@ def set_data_init():
     print("products", products)
 
 
-def create_frame(frame_parent):
+def create_frame(frame_parent, staff_id):
     data = get_all_data()
     set_data_init()
     frame = window.create_frame_actions_treeview(order_controller, frame_parent, name, display_name, column_orders,
-                                                 data)
+                                                 data, staff_id)
     return frame
 
 

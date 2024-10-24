@@ -198,7 +198,7 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
         state=tk.DISABLED
     )
     update_button.grid(row=0, column=1, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-    
+
     delete_button = button_image.create_image_button(
         frame_action,
         "add_btn",
@@ -211,7 +211,7 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
         state=tk.DISABLED
     )
     delete_button.grid(row=0, column=2, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-    
+
     widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
     if name == "orders":
         show_details_button = button_image.create_image_button(
@@ -227,7 +227,7 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
     return widgets
 
 
-def create_frame_actions_treeview(controller, frame_parent, name, display_name, dict_cols, rows):
+def create_frame_actions_treeview(controller, frame_parent, name, display_name, dict_cols, rows, staff_id):
     """
         Hàm tạo nội dung cho khung (frame) với bảng và các nút hành động.
         :param controller: Bộ điều khiển để lấy dữ liệu và thực hiện các thao tác.
@@ -235,6 +235,7 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
         :param display_name: Tên của khung nội dung (vd: 'category', 'product', ...).
         :param dict_cols: Từ điển các cột của bảng (vd: {"columns_name_display": ["Mã", "Tên loại sản phẩm"], ...}).
         :param rows: Dữ liệu ban đầu cho Treeview.
+        :param staff_id: M nhân viên  login
         :return: Trả về đối tượng frame đã tạo.
     """
     # Tạo frame chứa toàn bộ
@@ -300,7 +301,7 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
 
         # Hiển thị dialog thêm dữ liệu mới
         add_dialog.show_dialog(controller=controller, frame_parent=frame_parent, dict_cols=dict_cols,
-                               name=name, display_name=display_name, on_success=update_tree_view)
+                               name=name, display_name=display_name, staff_id=staff_id, on_success=update_tree_view)
 
     def update_item():
         selected_item = tree.selection()
@@ -311,7 +312,7 @@ def create_frame_actions_treeview(controller, frame_parent, name, display_name, 
         item_data = tree.item(selected_item_id)
         print("update_item", item_data)
         update_dialog.show_dialog(controller=controller, frame_parent=frame_parent, dict_cols=dict_cols,
-                                  name=name, display_name=display_name, data=item_data, on_success=update_tree_view)
+                                  name=name, display_name=display_name, data=item_data, staff_id=staff_id,on_success=update_tree_view)
 
     def delete_item():
         selected_item_id = tree.selection()[0]
@@ -507,7 +508,7 @@ def get_widget_values(widgets, is_add):
             print("value Entry", value)
         else:
             value = ""  # Handle unsupported widget types
-        if  (not is_add and value == "") or (is_add and widget.winfo_name() != "id" and value == ""):
+        if (not is_add and value == "") or (is_add and widget.winfo_name() != "id" and value == ""):
             messagebox.showerror("Error", f"Vui lòng điền đầy đủ thông tin!")  # Thông báo lỗi
             return None
 
@@ -670,14 +671,14 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
 
 # Tạo frame chứa các phần tử của dialog add, update
 def create_frame_in_dialog(controller, dialog_frame, width, parent_frame, dict_cols, name, display_name,
-                           on_success, data=[], is_add=True):
+                           on_success, staff_id, data=[], is_add=True):
     # Tạo frame chứa các phần tử của form
     form_frame = ttk.Frame(dialog_frame)
     form_frame.pack(padx=10, pady=10, fill="both", expand=True)
     # Tạo style cho buttons
     styles.create_button_style()
     create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_frame,
-                             name, display_name, on_success, data)
+                             name, display_name, on_success, data, staff_id)
 
     # Cập nhật lại kích thước của dialog
     dialog_frame.update_idletasks()  # Cập nhật để có kích thước chính xác sau khi thêm phần tử
@@ -708,7 +709,7 @@ def set_combobox_selected_by_id_prefix(data, id_prefix):
 
 
 def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_frame,
-                             name, display_name, on_success, data):
+                             name, display_name, on_success, data, staff_id):
     widgets = {}  # Dictionary to hold label-entry pairs
 
     num_widget_add = 0  # Tạo các trường nhập liệu dựa trên fields
@@ -718,7 +719,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
     validate_float_cmd = form_frame.register(validate.validate_float_input)
     validate_length_cmd = form_frame.register(validate.validate_length_input)
     validate_phone_cmd = form_frame.register(validate.validate_phone_input)
-
+    print("window staff_id", staff_id)
     for idx, (col_name) in enumerate(dict_cols["columns_name"]):
         index = num_widget_add + idx
         # Tạo widget tương ứng
@@ -743,7 +744,10 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                     entry.config(validate="key", validatecommand=(validate_float_cmd, "%P"))
                 if dict_cols["validates"][idx] == "phone":
                     entry.config(validate="key", validatecommand=(validate_phone_cmd, "%P"))
-                if not is_add:
+                if col_name == "staff_id":
+                    entry.insert(tk.END, staff_id)  # Set the default text to data["values"][idx]
+                    entry.config(state="readonly")
+                elif not is_add:
                     entry.insert(tk.END, data["values"][idx])  # Set the default text to data["values"][idx]
                     if col_name == "username":
                         entry.config(state="readonly")
@@ -757,7 +761,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 product_values = dict_cols["data_init"][col_name]["combobox_values"]
                 if not is_add:
                     create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data["values"][0],
-                                                  data["values"][3], validate_integer_cmd)
+                                                  data["values"][4], validate_integer_cmd)
                 else:
                     create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, "",
                                                   0, validate_integer_cmd)
@@ -767,7 +771,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
         # Trường hợp add thì không hiển thị item ID do id được generate tự động khi add
         # Trường hợp data date thì không hiển thị do date sẽ được add date.now
         if not (is_add and idx == 0) and str(dict_cols["widget_type"][idx]) != "Date" and str(
-                dict_cols["widget_type"][idx]) != "Product_list" and col_name != "staff_id":
+                dict_cols["widget_type"][idx]) != "Product_list":
             label = ttk.Label(form_frame, text=f"{dict_cols["columns_name_display"][idx]}:")
             label.grid(row=index, column=0, sticky="w")
             widgets[col_name].grid(row=index, column=1, sticky="ew")

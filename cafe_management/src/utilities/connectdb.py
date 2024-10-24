@@ -393,7 +393,7 @@ def get_user(username):
     try:
 
         # Check if the user exists
-        query = f"SELECT password FROM {DB_NAME}.staffs WHERE username = '{username}'"
+        query = f"SELECT id, password FROM {DB_NAME}.staffs WHERE username = '{username}'"
         print("query", query)
         cursor.execute(query)
 

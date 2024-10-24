@@ -29,10 +29,11 @@ def get_all_data():
     return product_controller.get_data(name)
 
 
-def create_frame(frame_parent):
+def create_frame(frame_parent, staff_id):
     rows = product_controller.get_data(name)
     set_data_init()
-    frame = window.create_frame_actions_treeview(product_controller, frame_parent, name, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(product_controller, frame_parent, name, display_name, columns, rows,
+                                                 staff_id)
     return frame
 
 

@@ -27,7 +27,6 @@ def get_data_details(name, order_id):
 
 def insert(name, data):
     products_info = data.pop("products_info")
-
     item = order_model.Order(**data)
     item.update_id(connectdb.generate_id(name))
     connectdb.insert_data(name, item)
