@@ -1,8 +1,9 @@
 class Invoice:
-    def __init__(self, invoice_date, id_order):
+    def __init__(self, id, order_id):
         self.id = id
-        self.invoice_date = invoice_date
-        self.id_order = id_order
-
+        self.order_id = order_id
+        self.total_amount = 0
     def update_id(self, id):
         self.id = id
+    def update_total_amount(self, total_amount):
+        self.total_amount = total_amount

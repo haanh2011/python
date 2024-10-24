@@ -1,4 +1,5 @@
 import mysql.connector
+import pandas as pd
 import configparser
 import bcrypt
 
@@ -156,10 +157,12 @@ def check_and_create_tables_in_db():
                            "CREATE TABLE orders ("
                            + " id CHAR(20) PRIMARY KEY,"
                            + " customer_id CHAR(20),"
+                           + " staff_id CHAR(20),"
                            + " order_date DATETIME DEFAULT CURRENT_TIMESTAMP,"
                            + " total_price DECIMAL(10,2),"
                            + " is_delete tinyint(1) NOT NULL DEFAULT '0',"
-                           + " FOREIGN KEY (customer_id) REFERENCES customers(id)"
+                           + " FOREIGN KEY (customer_id) REFERENCES customers(id),"
+                           + " FOREIGN KEY (staff_id) REFERENCES staffs(id)"
                            + " );"
                            )
     check_and_create_table("order_details",
@@ -438,6 +441,40 @@ def update_point_of_customer(customer_id, point_to_add):
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return err
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        db.close()
+
+# Lấy dữ liệu từ các bảng
+def get_data_from_db_for_chart(query):
+    db = connect_db()
+    cursor = db.cursor(dictionary=True)  # Sử dụng dictionary=True để lấy kết quả dưới dạng dict
+    try:
+        cursor.execute(query)
+        data = cursor.fetchall()
+        return pd.DataFrame(data)
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return err
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        db.close()
+
+def get_data_order_by_id(order_id):
+    db = connect_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute(f"SELECT * FROM {DB_NAME}.orders WHERE id = '{order_id}'")
+        data = cursor.fetchall()
+
+        print("Data updated successfully!")
+        return data
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
     finally:
         # Close the cursor and connection
         cursor.close()

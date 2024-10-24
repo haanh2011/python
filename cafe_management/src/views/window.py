@@ -198,7 +198,7 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
         state=tk.DISABLED
     )
     update_button.grid(row=0, column=1, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-
+    
     delete_button = button_image.create_image_button(
         frame_action,
         "add_btn",
@@ -211,7 +211,7 @@ def create_actions(frame_action, name, show_details_item, add_item, update_item,
         state=tk.DISABLED
     )
     delete_button.grid(row=0, column=2, sticky='we', padx=5, pady=5)  # Đặt nút ở góc trên bên phải
-
+    
     widgets = {"add_button": add_button, "update_button": update_button, "delete_button": delete_button}
     if name == "orders":
         show_details_button = button_image.create_image_button(
@@ -507,7 +507,7 @@ def get_widget_values(widgets, is_add):
             print("value Entry", value)
         else:
             value = ""  # Handle unsupported widget types
-        if is_add and widget.winfo_name() != "id" and value == "":
+        if  (not is_add and value == "") or (is_add and widget.winfo_name() != "id" and value == ""):
             messagebox.showerror("Error", f"Vui lòng điền đầy đủ thông tin!")  # Thông báo lỗi
             return None
 
@@ -767,7 +767,7 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
         # Trường hợp add thì không hiển thị item ID do id được generate tự động khi add
         # Trường hợp data date thì không hiển thị do date sẽ được add date.now
         if not (is_add and idx == 0) and str(dict_cols["widget_type"][idx]) != "Date" and str(
-                dict_cols["widget_type"][idx]) != "Product_list":
+                dict_cols["widget_type"][idx]) != "Product_list" and col_name != "staff_id":
             label = ttk.Label(form_frame, text=f"{dict_cols["columns_name_display"][idx]}:")
             label.grid(row=index, column=0, sticky="w")
             widgets[col_name].grid(row=index, column=1, sticky="ew")
@@ -784,13 +784,13 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
             else:
                 mess_error = controller.update(name, data)  # Update dữ liệu vào cơ sở dữ liệu
 
-        print("mess_error", mess_error)
-        if mess_error != "" and mess_error != None:
-            messagebox.showerror("Error", mess_error)
-        else:
-            dialog_frame.destroy()  # Đóng dialog
-            if on_success:
-                on_success()  # Cập nhật Treeview
+            print("mess_error", mess_error)
+            if mess_error != "" and mess_error != None:
+                messagebox.showerror("Error", mess_error)
+            else:
+                dialog_frame.destroy()  # Đóng dialog
+                if on_success:
+                    on_success()  # Cập nhật Treeview
 
     def on_cancel():
         dialog_frame.destroy()

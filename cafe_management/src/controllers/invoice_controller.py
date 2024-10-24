@@ -1,6 +1,8 @@
 import os
 import sys
 
+from src.controllers import order_controller
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 models_dir = os.path.join(current_dir, '../models')
 connect_dir = os.path.join(current_dir, '..')
@@ -17,8 +19,13 @@ def get_data(name):
 
 def insert(name, data):
     item = invoice_model.Invoice(**data)
-    item.update_id(connectdb.generate_id(name))
-    return connectdb.insert_data(name, item)
+    order = connectdb.get_data_order_by_id(item.order_id)
+    print(order,"order")
+    if order:
+        item.update_total_amount(order[0][4])
+        print(item.total_amount,"item")
+        item.update_id(connectdb.generate_id(name))
+        return connectdb.insert_data(name, item)
 
 
 def update(name, data):

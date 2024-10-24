@@ -21,7 +21,7 @@ import dashboard_view
 def create_root_window(width, height):
     return window.create_root_window("Ứng dụng Quản Lý Quán Cà Phê", width, height)
 
-def frame_main(frame_root, is_admin):
+def frame_main(frame_root, staff_id):
     window.create_header(frame_root)
 
     # Register the validation function with tkinter
@@ -62,7 +62,7 @@ def frame_main(frame_root, is_admin):
     # Giữ tham chiếu đến photo để tránh garbage collection
     image_label_logo.image = logo  # Lưu giữ tham chiếu đến PhotoImage
     image_label_bg.image = bg  # Lưu giữ tham chiếu đến PhotoImage
-    if is_admin:
+    if staff_id == "admin":
         # Create the content frame
         fr_dashboard = dashboard_view.create_frame(frame_root)
         fr_category = category_view.create_frame(frame_root)

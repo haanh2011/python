@@ -12,12 +12,13 @@ name_details = "order_details"
 display_name = "Đơn Hàng"
 display_name_detail = "Chi Tiết Đơn Hàng"
 column_orders = {
-    "widget_type": ["Entry", "Combobox", "Product_list"],
-    "columns_name_display": ["Mã", "Khách hàng", "Ngày tạo"],
-    "columns_name": ["id", "customer_id", "products_info"],
+    "widget_type": ["Entry", "Combobox", "", "Date", "Product_list"],
+    "columns_name_display": ["Mã", "Khách hàng", "Nhân Viên", "Ngày tạo", "Tổng tiền"],
+    "columns_name": ["id", "customer_id", "staff_id", "order_date", "products_info"],
     "data_init": {"id": "", "customer_id": {"value_default": "", "combobox_value": []},
+                  "staff_id":"", "order_date":"",
                   "products_info": {"value_default": "", "combobox_value": []}},
-    "validates": ["string", "string", "list"]
+    "validates": ["string", "string", "string", "string", "list"]
 }
 
 column_order_details = {
@@ -25,8 +26,7 @@ column_order_details = {
     "columns_name_display": ["Mã", "Mã đơn hàng", "Tên sản phẩm", "Số lượng", "Giá tiền"],
     "columns_name": ["id", "order_id", "product_name", "quality", "price"],
     "data_init": {"id": "", "order_id": "", "product_name": "", "quality": 0, "price": 0},
-    "validates": ["string", "string", "list", "int", "float"],
-    "maxvalues": ["string", "string", "list", "int", "float"]
+    "validates": ["string", "string", "list", "int", "float"]
 }
 
 

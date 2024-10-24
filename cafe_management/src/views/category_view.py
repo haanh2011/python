@@ -26,7 +26,7 @@ def get_all_data():
 
 def create_frame(frame_parent):
     rows = get_all_data()
-    frame = window.create_frame_actions_treeview(category_controller, frame_parent, name, display_name, columns, rows)
+    frame = window.create_frame_actions_treeview(category_controller, frame_parent, name, display_name, columns, rows, staff_id)
     return frame
 
 
