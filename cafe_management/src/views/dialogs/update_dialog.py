@@ -20,7 +20,7 @@ def show_dialog(controller, frame_parent, dict_cols, name, display_name, data, o
     width = 450
 
     # Tạo và hiển thị dialog
-    dialog_update = window.create_dialog(frame_parent, f"Form cập nhật {name} ")
+    dialog_update = window.create_dialog(frame_parent, f"Form cập nhật {name} ", width)
 
     # Gọi hàm dialog từ file styles.py để áp dụng style
     styles.dialog()

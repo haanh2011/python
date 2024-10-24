@@ -23,7 +23,7 @@ from src.helper import button_image
 from dialogs import add_dialog, update_dialog, delete_dialog
 
 
-def center_window(root, width, height):
+def set_position_window(root, width, height):
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
@@ -35,14 +35,13 @@ def center_window(root, width, height):
 
 def create_root_window(title, width, height):
     root = tk.Tk()
+    set_position_window(root, width, height)
     root.title(title)
-    # root.iconbitmap("images/logo.ico")  # Thay đổi đường dẫn đến file icon của bạn
     # Đặt icon bằng hình ảnh
     img = Image.open("images/logo.png")  # Thay đổi đường dẫn đến file hình ảnh của bạn
     icon = ImageTk.PhotoImage(img)
     root.iconphoto(False, icon)
 
-    center_window(root, width, height)
     return root
 
 
@@ -76,19 +75,16 @@ def confirm_logout(root, clock_frame):
         show_login_form()  # Show the login form
 
 
-def show_login_form(root):
-    login_window = tk.Tk()
-    login_window.title("Login")
-    create_login_frame(login_window)
-    center_window(login_window, 400, 200)
-    return login_window
+def show_login_form():
+    login_window = create_login_frame()
+    login_window.mainloop()
 
 
 def create_frame(frame_parent, name, **kwargs):
     return tk.Frame(frame_parent, name=name, **kwargs)
 
 
-def create_dialog(frame_parent, title):
+def create_dialog(frame_parent, title, width=0, height=0):
     """
     Tạo một dialog và căn giữa nó trên màn hình.
 
@@ -102,7 +98,8 @@ def create_dialog(frame_parent, title):
     dialog_toplv = tk.Toplevel(frame_parent)
     dialog_toplv.grab_set()  # Đặt dialog ở chế độ modal
     dialog_toplv.title(title)
-
+    if width > 0 and height > 0:
+        set_position_window(dialog_toplv, width, height)
     # Cài đặt một số thuộc tính cho dialog (tuỳ chọn)
     dialog_toplv.resizable(False, False)  # Không cho phép thay đổi kích thước
 

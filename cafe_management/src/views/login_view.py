@@ -21,6 +21,7 @@ def show_main_app():
     main_app_root = main_view.create_root_window(1280, 720)
     # Đảm bảo cửa sổ luôn căn giữa khi khởi động lại
     main_app_root.update_idletasks()  # Cập nhật cửa sổ trước khi lấy kích thước
+
     main_view.frame_main(main_app_root)
 
     main_app_root.mainloop()
@@ -28,10 +29,9 @@ def show_main_app():
 
 def create_login_frame():
     # Main window setup for login
-    login_root = window.create_root_window("Đâng nhập", 400, 150)
+    login_root = window.create_root_window("Đăng nhập", 400, 160)
     login_controller.add_user_admin()
     def login():
-        salt = bcrypt.gensalt()
         username = username_entry.get()
         password = password_entry.get()
         result = login_controller.get_user(username)
@@ -70,3 +70,4 @@ def create_login_frame():
 
     form_frame.columnconfigure(1, weight=1)
     login_root.mainloop()
+    return  login_root
