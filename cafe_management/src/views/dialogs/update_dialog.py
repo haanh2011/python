@@ -26,4 +26,4 @@ def show_dialog(controller, frame_parent, dict_cols, name, display_name, data, o
     styles.dialog()
 
     # Tạo frame chứa các phần tử của form
-    window.create_frame_in_dialog(controller, dialog_update, width, frame_parent, dict_cols, name, display_name,on_success,data, False)
+    window.create_frame_in_dialog(controller, dialog_update, width, frame_parent, dict_cols, name, display_name, on_success,data, False)

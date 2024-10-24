@@ -1,5 +1,6 @@
 import mysql.connector
 import configparser
+import bcrypt
 
 HOST = 'localhost'
 USER = 'root'
@@ -186,48 +187,6 @@ def check_and_create_tables_in_db():
                            )
 
 
-def insert_data_ex():
-    # Insert sample data
-    insert_data("categories", {"id": "CAT0001", "name": "Coffee", "is_delete": 0})
-    insert_data("categories", {"id": "CAT0002", "name": "Tea", "is_delete": 0})
-
-    insert_data("products",
-                {"id": "PROD0001", "name": "Cappuccino", "price": 5.00, "category_id": "CAT0001", "is_delete": 0})
-    insert_data("products",
-                {"id": "PROD0002", "name": "Espresso", "price": 4.50, "category_id": "CAT0001", "is_delete": 0})
-    insert_data("products",
-                {"id": "PROD0003", "name": "Black Tea", "price": 3.00, "category_id": "CAT0002", "is_delete": 0})
-
-    insert_data("customers",
-                {"id": "CUST0001", "name": "John Doe", "phone": "1234567890", "address": "123 Main St", "is_delete": 0})
-    insert_data("customers",
-                {"id": "CUST0002", "name": "Jane Smith", "phone": "9876543210", "address": "456 Elm St",
-                 "is_delete": 0})
-
-    insert_data("staffs", {"id": "STAFF0001", "name": "Alice Johnson", "username": "alice", "password": "password123",
-                           "phone": "5555555555", "address": "789 Oak St", "is_delete": 0})
-    insert_data("staffs", {"id": "STAFF0002", "name": "Bob Smith", "username": "bob", "password": "password456",
-                           "phone": "6666666666", "address": "987 Maple St", "is_delete": 0})
-
-    insert_data("orders", {"id": "ORDER0001", "customer_id": "CUST0001", "total_price": 12.50, "is_delete": 0})
-    insert_data("orders", {"id": "ORDER0002", "customer_id": "CUST0002", "total_price": 8.00, "is_delete": 0})
-
-    insert_data("order_details",
-                {"id": "OD0001", "order_id": "ORDER0001", "product_id": "PROD0001", "quantity": 2, "price": 5.00,
-                 "is_delete": 0})
-    insert_data("order_details",
-                {"id": "OD0002", "order_id": "ORDER0001", "product_id": "PROD0002", "quantity": 1, "price": 4.50,
-                 "is_delete": 0})
-    insert_data("order_details",
-                {"id": "OD0003", "order_id": "ORDER0002", "product_id": "PROD0003", "quantity": 2, "price": 3.00,
-                 "is_delete": 0})
-
-    insert_data("invoices", {"id": "INV0001", "customer_id": "CUST0001", "total_amount": 12.50, "payment_status": 1.00,
-                             "is_delete": 0})
-    insert_data("invoices", {"id": "INV0002", "customer_id": "CUST0002", "total_amount": 8.00, "payment_status": 1.00,
-                             "is_delete": 0})
-
-
 def get_data_by_value(type_name, col_name, value):
     db = connect_db()
     cursor = db.cursor()
@@ -330,6 +289,7 @@ def insert_data(table_name, data):
 
     # Create a cursor object
     cursor = cnx.cursor()
+    print("insert_data")
     try:
         # Lấy tất cả các thuộc tính của đối tượng
         attributes = vars(data)
@@ -415,6 +375,47 @@ def delete_data(table_name, id_data):
     try:
         cursor.execute(f"UPDATE {table_name} SET is_delete = 1 WHERE id='{id_data}'")
         db.commit()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        db.close()
+
+
+def get_user(username):
+    db = connect_db()
+    cursor = db.cursor()
+    try:
+
+        # Check if the user exists
+        query = f"SELECT password FROM {DB_NAME}.staffs WHERE username = '{username}'"
+        print("query", query)
+        cursor.execute(query)
+
+        # Fetch the result
+        result = cursor.fetchone()
+
+        return result
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        db.close()
+
+
+def insert_user_admin(data):
+    db = connect_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute(f"SELECT * FROM {DB_NAME}.staffs WHERE id = 'admin' AND is_delete = 0")
+        result = cursor.fetchall()
+        if not result or len(result) == 0:
+            insert_data("staffs", data)
+
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 

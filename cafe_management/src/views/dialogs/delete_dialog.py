@@ -32,7 +32,6 @@ def show_dialog(controller, frame_parent, name, data_id, on_success=None):
 
     btn_cancel = ttk.Button(form_frame, text="Cancel", command=dialog_delete.destroy, style="Cancel.TButton")
     btn_cancel.grid(row=1, column=1, sticky="ew", pady=10)
-    window.set_centered_geometry(frame_parent, dialog_delete)
 
     def on_save():
         controller.delete(name, data_id)  # Gọi controller để xóa dữ liệu

@@ -28,3 +28,6 @@ def update(name, data):
 
 def delete(name, data_id):
     return connectdb.delete_data(name, data_id)
+
+def get_user(username, password):
+    return connectdb.get_user(username, password)

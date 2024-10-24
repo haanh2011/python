@@ -1,21 +1,22 @@
 import sys, os
 import tkinter as tk
 from tkinter import ttk, messagebox
-from types import NoneType
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+
+from src.views import styles, order_view
+from styles import *
+from src.helper.clock_frame import *
 
 from PIL.ImageOps import expand
 from numpy.ma.core import filled
 from pandas.io.formats.info import frame_examples_sub
 
-from src.views import styles, order_view
-from src.views.product_view import display_name
-from styles import *
-from src.helper.clock_frame import *
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 utilities_dir = os.path.join(current_dir, '../utilities')
 sys.path.append(utilities_dir)
 import validate
+from login_view import create_login_frame
 
 from src.helper import button_image
 
@@ -32,9 +33,15 @@ def center_window(root, width, height):
     root.geometry(f"{width}x{height}+{x_position}+{y_position}")
 
 
-def create_root_window(width, height):
+def create_root_window(title, width, height):
     root = tk.Tk()
-    root.title("Ứng dụng Quản Lý Quán Cà Phê")
+    root.title(title)
+    # root.iconbitmap("images/logo.ico")  # Thay đổi đường dẫn đến file icon của bạn
+    # Đặt icon bằng hình ảnh
+    img = Image.open("images/logo.png")  # Thay đổi đường dẫn đến file hình ảnh của bạn
+    icon = ImageTk.PhotoImage(img)
+    root.iconphoto(False, icon)
+
     center_window(root, width, height)
     return root
 
@@ -47,7 +54,34 @@ def create_header(frame_parent):
     header_logo_label.pack(side="left", padx=20, pady=10)
 
     clock_frame = ClockFrame(header_frame)
+
+    # Create a logout button
+    btn_logout = button_image.create_image_button(
+        header_frame, "btn_logout", "Đăng xuất", "images/logout.png",
+        command=lambda: confirm_logout(frame_parent, clock_frame),
+        tooltip_text="",
+        bg="#f0f0f0",  # Màu nền tùy chỉnh
+        fg=BACKGROUND_COLOR  # Màu chữ tùy chỉnh
+    )
+    btn_logout.pack(side="right", padx=10, pady=5)
+
     clock_frame.pack(side="right", padx=20, pady=5)
+
+
+def confirm_logout(root, clock_frame):
+    if messagebox.askokcancel("Xác nhận đăng xuất", "Bạn có chắc chắn muốn đăng xuất?"):
+        clock_frame.stop_clock()  # Stop the clock updates
+        clock_frame.destroy()  # Destroy the clock frame
+        root.destroy()  # Close the main window
+        show_login_form()  # Show the login form
+
+
+def show_login_form(root):
+    login_window = tk.Tk()
+    login_window.title("Login")
+    create_login_frame(login_window)
+    center_window(login_window, 400, 200)
+    return login_window
 
 
 def create_frame(frame_parent, name, **kwargs):
@@ -581,7 +615,7 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
 
     def delete_product():
         """Handle the Delete button press."""
-        selected_idx= tree.selection()
+        selected_idx = tree.selection()
         selected_item = tree.item(selected_idx)
         if not selected_item:
             messagebox.showwarning("Selection Error", "Please select a product to delete.")
@@ -589,7 +623,7 @@ def create_entry_add_list_product(form_frame, product_values, idx, col_name, wid
         tree.delete(selected_idx)
         total = float(entry_total.get()) - float(selected_item["values"][1]) * float(selected_item["values"][2])
         update_entry_value(total)
-        print(selected_item,"selected_item")
+        print(selected_item, "selected_item")
 
     def on_tree_select(event):
         """Enable or disable the delete button based on selection."""
@@ -703,13 +737,12 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
         match str(dict_cols["widget_type"][idx]):
             case "Combobox":
                 values = dict_cols["data_init"][col_name]["combobox_values"]
+                # selected_data = tk.StringVar()
                 combobox = ttk.Combobox(form_frame, values=values, width=35, name=col_name,
                                         state="readonly")
                 if not is_add:
                     dt = set_combobox_selected_by_id_prefix(values, data["values"][idx])
-                    # selected_data.set(value)
                     combobox.set(dt)
-                    # combobox.current(default_idx)
                 widgets[col_name] = combobox
             case "Entry":
                 # Tạo Entry với padding để tăng chiều cao
@@ -723,10 +756,9 @@ def create_widgets_in_dialog(form_frame, dict_cols, is_add, controller, dialog_f
                 text = tk.Text(form_frame, width=35, height=6, name=col_name)
                 if not is_add:
                     text.insert('1.0', data["values"][idx])
-                widgets[col_name] = text
+                    widgets[col_name] = text
             case "Product_list":
                 product_values = dict_cols["data_init"][col_name]["combobox_values"]
-                print("data[values]", data["values"])
                 if not is_add:
                     create_entry_add_list_product(form_frame, product_values, idx, col_name, widgets, data["values"][0],
                                                   data["values"][3])
@@ -784,3 +816,48 @@ def create_frame_treeview_details(controller, frame_parent, name, display_name, 
 
     # Tạo treeview
     tree = create_tree_view(frame_treeview, dict_cols, rows)
+
+
+def create_frame_dashboard(frame_parent):
+    # Tạo frame dashboard
+    frame_dashboard = tk.Frame(frame_parent, padx=20, pady=10, bg="#f0f0f0")
+    frame_dashboard.pack(fill="both", expand=True)
+
+    # Cấu hình mở rộng cột để căn giữa nội dung
+    frame_dashboard.columnconfigure(0, weight=1)
+
+    # Tạo tiêu đề
+    lbl_title = tk.Label(frame_dashboard, text="Bảng Thống Kê Doanh Thu", font=("Arial", 18, "bold"), bg="#f0f0f0")
+    lbl_title.grid(row=0, column=0, pady=10, sticky="ew")
+
+    # Dữ liệu doanh thu giả theo tháng
+    data = {
+        "months": ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
+        "revenues": [10000000, 15000000, 12000000, 18000000, 20000000, 25000000]
+    }
+
+    # Tạo vùng biểu đồ doanh thu
+    fig, ax = plt.subplots(figsize=(6, 4))
+    canvas = FigureCanvasTkAgg(fig, master=frame_dashboard)
+    canvas.get_tk_widget().grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+    # Vẽ biểu đồ doanh thu theo tháng
+    months = data["months"]
+    revenues = data["revenues"]
+    ax.bar(months, revenues, color="blue")
+    ax.set_title("Doanh thu theo tháng")
+    ax.set_xlabel("Tháng")
+    ax.set_ylabel("Doanh thu (VND)")
+
+    # Cập nhật biểu đồ
+    canvas.draw()
+
+    # Tính tổng doanh thu
+    total_revenue = sum(revenues)
+
+    # Hiển thị tổng doanh thu
+    lbl_total = tk.Label(frame_dashboard, text=f"Tổng Doanh Thu: {total_revenue:,} VND", font=("Arial", 14),
+                         bg="#f0f0f0")
+    lbl_total.grid(row=2, column=0, columnspan=2, pady=10)
+
+    return frame_dashboard

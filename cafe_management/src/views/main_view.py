@@ -16,9 +16,10 @@ import invoice_view
 import order_view
 import product_view
 import staff_view
+import dashboard_view
 
 def create_root_window(width, height):
-    return window.create_root_window(width, height)
+    return window.create_root_window("Ứng dụng Quản Lý Quán Cà Phê", width, height)
 
 def frame_main(frame_root):
     window.create_header(frame_root)
@@ -34,7 +35,6 @@ def frame_main(frame_root):
     image_bg = Image.open(image_bg_path)
 
     # Đặt kích thước cho hình ảnh
-    # new_size = (100, 100)  # Kích thước mới (width, height)
     new_size = (180, 100)  # Kích thước mới (width, height)
     image_resized = image_logo.resize(new_size, Image.LANCZOS)  # Resize hình ảnh
 
@@ -56,6 +56,7 @@ def frame_main(frame_root):
     image_label_bg.image = bg  # Lưu giữ tham chiếu đến PhotoImage
 
     # Create the content frame
+    fr_dashboard = dashboard_view.create_frame(frame_root)
     fr_category = category_view.create_frame(frame_root)
     fr_product = product_view.create_frame(frame_root)
     fr_order = order_view.create_frame(frame_root)
@@ -64,10 +65,11 @@ def frame_main(frame_root):
     fr_staff = staff_view.create_frame(frame_root)
 
     # List of frames and buttons
-    frames = [fr_category, fr_product, fr_order, fr_invoice, fr_customer, fr_staff]
+    frames = [fr_dashboard, fr_category, fr_product, fr_order, fr_invoice, fr_customer, fr_staff]
     buttons = []
 
     # Create buttons for the menu
+    btn_dashboard = dashboard_view.create_button_menu(dashboard_frame, fr_dashboard,  buttons, frames)
     btn_category = category_view.create_button_menu(dashboard_frame, fr_category,  buttons, frames)
     btn_product = product_view.create_button_menu(dashboard_frame, fr_product, buttons, frames)
     btn_order = order_view.create_button_menu(dashboard_frame, fr_order, buttons, frames)
@@ -77,3 +79,6 @@ def frame_main(frame_root):
 
     #Set hiển thị mặc định là order
     window.show_frame(fr_order, frames, buttons, btn_order)
+
+def show_login_form():
+    return window.show_login_form()

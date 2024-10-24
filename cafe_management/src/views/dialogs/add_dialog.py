@@ -11,7 +11,6 @@ sys.path.append(views_dir)
 import styles
 import window
 
-
 def show_dialog(controller, frame_parent, dict_cols, name, display_name, on_success=None):
     """
     Hiển thị hộp thoại thêm dữ liệu.
